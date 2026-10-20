@@ -1,6 +1,4 @@
----
-title: "Before we begin"
----
+# Before we begin {.unnumbered}
 
 ::: {.book-intro}
 How can a quantum system become locally featureless while its wavefunction keeps developing rich structure? What changes when we observe it? Random quantum circuits turn these questions into a concrete many-body laboratory.
@@ -34,7 +32,7 @@ Their joint density matrix has rank one. Either qubit alone has density matrix $
 
 A random circuit creates such correlations using local operations, one layer at a time. Locality restricts how fast information can travel. Unitarity preserves the total information. Measurement transfers some information to a classical record. Those few ingredients already produce a surprisingly rich theory.
 
-![An original brickwork circuit schematic. Teal rectangles are independent two-site gates; red marks indicate selected local measurements. One horizontal row of gates is one unit of time. Measurement locations here are illustrative.](figs/brickwork){#fig-overview-brickwork width=95%}
+![An original brickwork circuit schematic. Teal rectangles are independent two-site gates; red marks indicate selected local measurements. One horizontal row of gates is one unit of time. Measurement locations here are illustrative.](figs/brickwork){width=95%}
 
 ## How the course fits together
 
