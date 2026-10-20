@@ -1,0 +1,394 @@
+# Structure beyond independent Haar gates {#sec-structured-unitary}
+
+Independent Haar gates isolate the consequences of locality and unitarity. Real systems often have additional structure: a conserved charge, a periodically repeated drive, an integrable quasiparticle description, or a restricted gate set. Structure can introduce a slow mode, make a formerly inaccessible quantity exactly computable, or allow a compressed classical simulation. These possibilities are distinct: a circuit can be chaotic and analytically solvable for selected observables, while a classically simulable circuit can generate extensive entanglement.
+
+Throughout, $q$ denotes the physical Hilbert space dimension per site. Unless a separate continuous time model is explicitly introduced, $t$ counts individual brickwork layers and the maximum propagation speed is one site per layer. A Floquet period comprising two layers is counted by the integer $n$, so $t=2n$.
+
+## Conserved charge and diffusion {#sec-str-charge}
+
+### Building a symmetry into the gates
+
+For qubits take $Q=\sum_jZ_j$. A charge conserving gate on neighboring sites satisfies $[u_{j,j+1},Z_j+Z_{j+1}]=0$. The two qubit space splits into charge sectors with dimensions $1,2,1$: $\ket{00}$, the span of $\ket{01},\ket{10}$, and $\ket{11}$. Drawing a Haar unitary independently within each block gives local mixing without changing $Q$.
+
+A generic discrete time circuit has no continuously generated energy conservation law. It can, however, be deliberately engineered to commute with an operator, including a chosen Hamiltonian. The point is that energy conservation does not follow automatically from discrete time translation, whereas $Q$ conservation follows from the explicit gate constraint.
+
+Expand $Z_0(t)=\sum_Sa_S(t)S$ in orthonormal Pauli strings. Denote its amplitude on the local density $Z_j$ by $a_j$. Charge conservation fixes a **sum of amplitudes**:
+
+$$
+\sum_j a_j(t)
+=2^{-L}\operatorname{Tr}[QZ_0(t)]
+=2^{-L}\operatorname{Tr}[QZ_0]=1.
+$$ {#eq-str-charge-sum}
+
+The full operator norm fixes a different quantity, $\sum_Sa_S^2=1$. Confusing these two constraints would erase the distinction between diffusive charge and the nonlocal strings emitted by it.
+
+Under a Haar block average, $Z_j+Z_{j+1}$ is unchanged and the difference is averaged to zero. Thus
+
+$$
+\overline{a_j'}=\overline{a_{j+1}'}
+=\frac{\overline{a_j}+\overline{a_{j+1}}}{2}.
+$$ {#eq-str-charge-averaging}
+
+Other traceless operators within each charge block average to zero and do not modify this first moment rule. It is an exact statement about the averaged amplitudes, not every circuit realization.
+
+### Deriving the continuum diffusion constant
+
+Pair averaging first acts on even bonds and then odd bonds. Let $b_m$ be the common amplitude on sites $2m,2m+1$ immediately after an even layer. After an odd layer and the next even layer,
+
+$$
+b_m\longmapsto\frac14b_{m-1}+\frac12b_m+\frac14b_{m+1}.
+$$
+
+The cell spacing is two sites and this update takes two layers. For a slowly varying Fourier mode with physical wave number $k$, the eigenvalue is $(1+\cos2k)/2=\cos^2k=1-k^2+O(k^4)$. Matching it to $e^{-2Dk^2}$ gives $D=1/2$ in the layer convention. The continuum density amplitude therefore obeys
+
+$$
+\partial_t a=D\partial_x^2a,
+\qquad
+a(x,t)\simeq\frac{1}{\sqrt{4\pi Dt}}
+ e^{-x^2/(4Dt)}.
+$$ {#eq-str-diffusion}
+
+For $D=1/2$, the charge autocorrelation decays as $a(0,t)\simeq(2\pi t)^{-1/2}$. A slow hydrodynamic mode has replaced the exponential decay of the circuit without conservation laws. Its physical width grows as $\sqrt t$, although most of the full operator can spread ballistically. [@khemani2018conserved; @rakovszky2018conserved]
+
+### Where the diffusing operator weight goes
+
+Separate the Hilbert–Schmidt weight into local densities and everything else:
+
+$$
+w_c(t)=\sum_j|a_j(t)|^2,\qquad
+w_{\mathrm{nc}}(t)=1-w_c(t).
+$$
+
+Within a self averaging hydrodynamic description, inserting the Gaussian gives
+
+$$
+w_c(t)\simeq\int dx\,a(x,t)^2
+=\frac{1}{\sqrt{8\pi Dt}}.
+$$ {#eq-str-conserved-weight}
+
+For $D=1/2$ this is $1/(2\sqrt{\pi t})$. The sum of amplitudes remains one, but their squared sum shrinks as the amplitude spreads. The simple prefactor is controlled in the corresponding hydrodynamic or enlarged local dimension descriptions; equality of a squared ensemble mean and an ensemble mean square is not automatic at finite $q$.
+
+A local conservation equation explains the lost weight. With vanishing boundary terms,
+
+$$
+\frac{d}{dt}\int a^2dx
+=2D\int a\partial_x^2a\,dx
+=-2D\int(\partial_xa)^2dx.
+$$ {#eq-str-emission}
+
+The negative term is weight transferred into nonconserved strings. Once emitted, those strings spread with a ballistic front. A useful schematic equation for a right moving emitted density $\rho_{\mathrm{nc}}$ is
+
+$$
+\partial_t\rho_{\mathrm{nc}}
+=-v_B\partial_x\rho_{\mathrm{nc}}+D_{\mathrm f}\partial_x^2\rho_{\mathrm{nc}}+\mathcal J,
+\qquad
+\int\mathcal J\,dx=-\dot w_c.
+$$
+
+Detailed microscopic models require additional fields and both moving fronts; this equation displays only the source mechanism. Emission continues algebraically late in time. A front emitted at time $\tau$ reaches approximately $x=v_B(t-\tau)$, so late emissions populate the region behind the leading front. As a result, suitable OTOCs approach their late time values with power law tails.
+
+There is no loss of total operator norm and no increase of the entropy of the complete pure state. Dissipation appears when an observer retains only the few local density amplitudes and discards the enormous space of extended operators. Controlled circuit calculations make this transfer explicit; the applicability to a given deterministic Hamiltonian is a hydrodynamic assertion supported by analytic reasoning and numerical evidence, rather than an exact Haar identity.
+
+### Higher Rényi entropies can be slower
+
+Diffusion also changes the relation between entropy measures. The von Neumann entropy weights all Schmidt probabilities through $-p\ln p$. Higher Rényi entropies emphasize the largest probabilities. Rare charge depleted or locally frozen configurations near a cut can protect an unusually large Schmidt coefficient until diffusion reaches the cut. In appropriate one dimensional diffusive models this mechanism gives subballistic higher Rényi growth, even while the von Neumann entropy grows ballistically. The precise bound and asymptotic law depend on local Hilbert space, initial state, and conserved sectors. It is unsafe to impose one common membrane tension or one common $v_E$ on every Rényi index. [@rakovszky2019subballistic]
+
+## More restrictive conservation laws {#sec-str-fractons}
+
+A **subsystem symmetry** acts on a lower dimensional part of a higher dimensional lattice, such as a separate conserved charge on every row and every column. Moving one isolated charge to a neighboring row violates one of those conservation laws. Relaxation then requires coordinated motions. A schematic continuum equation allowed by independent row and column conservation in two dimensions is
+
+$$
+\partial_t\rho=-\kappa\partial_x^2\partial_y^2\rho.
+$$ {#eq-str-subsystem-hydro}
+
+Integrating over either coordinate shows that each row or column charge stays fixed. A Fourier mode decays as $e^{-\kappa k_x^2k_y^2t}$. Integrating that kernel at the origin with a lattice ultraviolet cutoff gives a logarithmically enhanced $t^{-1/2}$ decay: modes near either momentum axis relax unusually slowly. This explains why ordinary isotropic diffusion is inadequate. In automaton examples, effective theory and numerical data support $\ln t/\sqrt t$ charge relaxation for intersecting line symmetries in two dimensions and $t^{-3/4}$ for certain plane symmetries in three dimensions. These exponents characterize the stated models, rather than every possible subsystem symmetric dynamics. [@iaconis2019subsystem]
+
+Another constraint conserves charge and dipole moment,
+
+$$
+Q=\sum_x n_x,\qquad P=\sum_xx n_x.
+$$
+
+A lone charge cannot move without changing $P$. A neutral dipole can move, and correlated rearrangements may preserve both quantities. For binary occupations, $0110\leftrightarrow1001$ is one allowed four site move: it conserves both the number of particles and their summed positions. A continuum theory within an ergodic mobile sector often has a leading $k^4$ relaxation rate, $\partial_t\rho=-\kappa\partial_x^4\rho$, giving a length scale $t^{1/4}$.
+
+Local constraints can do more than slow transport. Form a graph whose vertices are product configurations in a fixed $(Q,P)$ sector and whose edges are nonzero allowed local matrix elements. The graph can split into many disconnected components even though every vertex has identical global charges. Quantum evolution cannot connect different components. This is **Hilbert space fragmentation**, also called shattering. It can produce exponentially many dynamically invariant subspaces and frozen states without a conventional integrable list of local conserved densities. The projectors onto disconnected components are, of course, conserved operators; the novelty is their origin and their often nonlocal structure.
+
+Not every fragmented model fails to thermalize for typical states. If one component contains almost all states of a charge sector, typical states can thermalize within it while rare frozen states remain. Stronger fragmentation can retain a finite infinite temperature memory. The interaction range and local state space matter: adding allowed moves can change strong fragmentation to weak fragmentation. Hydrodynamics assumes a sufficiently connected active sector and cannot by itself describe disconnected frozen sectors. [@sala2020fragmentation]
+
+## Floquet evolution and spectral correlations {#sec-str-floquet}
+
+### Why repeating gates changes the question
+
+Draw two brickwork layers once and repeat them forever. The period operator is $W=U_2U_1$, with $U(2n)=W^n$. Gates remain spatially local, but the same matrix appears at every period. This repeated use destroys the independent time step averaging used for @eq-op-weight-markov.
+
+Write $W\ket{\alpha}=e^{i\theta_\alpha}\ket{\alpha}$. The eigenphases $\theta_\alpha$ are quasienergies multiplied by the period, defined modulo $2\pi$. They play the spectral role that energies play in a time independent Hamiltonian. A chaotic drive with no conservation laws is expected, within its thermalizing regime, to heat local subsystems toward infinite temperature. Symmetries must be resolved before comparing spectra with random matrix predictions: mixing unrelated symmetry sectors obscures level repulsion.
+
+The **spectral form factor** uses the ordinary unnormalized trace,
+
+$$
+K(n)=|\operatorname{Tr}W^n|^2
+=\sum_{\alpha,\beta}e^{in(\theta_\alpha-\theta_\beta)}.
+$$ {#eq-str-sff}
+
+If $D=q^L$ is the full Hilbert space dimension, the circular unitary ensemble, or CUE, has
+
+$$
+\overline{K(n)}_{\mathrm{CUE}}=\min(n,D),\qquad n\geq1,
+\qquad K(0)=D^2.
+$$ {#eq-str-cue}
+
+This formula assumes no antiunitary time reversal constraint. Other symmetry classes have different ramps.
+
+### A short derivation of the CUE ramp
+
+The joint eigenphase probability for a Haar $D\times D$ unitary is proportional to $\prod_{\alpha<\beta}|e^{i\theta_\alpha}-e^{i\theta_\beta}|^2$. The product is a Vandermonde determinant times its conjugate. Expanding the determinant in the orthonormal Fourier functions $e^{ik\theta}/\sqrt{2\pi}$, $k=0,\ldots,D-1$, and integrating unused phases gives the two point density for distinct eigenphases:
+
+$$
+R_2(\theta,\phi)=\frac{D^2}{(2\pi)^2}
+ -\left|\frac{1}{2\pi}\sum_{k=0}^{D-1}e^{ik(\theta-\phi)}\right|^2.
+$$
+
+In $K(n)$ the $\alpha=\beta$ terms contribute $D$. For $n>0$ the first constant term in $R_2$ integrates to zero. Expanding the squared sum, the remaining Fourier integral counts pairs $(k,l)$ with $k-l=-n$. There are $D-n$ such pairs if $n<D$, and none otherwise. Therefore $K=D-(D-n)=n$ on the ramp and $K=D$ on the plateau. Independent uniformly distributed phases would instead give $K=D$ immediately. The ramp detects correlations between phases, not merely the fact that they are spread around a circle.
+
+### Pairing histories in a local circuit
+
+The trace in @eq-str-sff closes each circuit history periodically in time. Multiplying it by its complex conjugate creates one forward and one backward history. Pairing them with a relative cyclic time shift $s\in\{0,\ldots,n-1\}$ cancels their phases. There are $n$ such globally uniform shifts, suggesting the CUE answer.
+
+For an individual circuit many other interfering histories remain. $K(n)$ is not generally self averaging, so a disorder ensemble or a suitable time window is needed to extract a smooth ramp. In local Haar Floquet models, large $q$ diagrammatics make the paired history argument controlled: leading contractions organize into local choices of cyclic pairing, and in the appropriate regime only the globally coherent choices survive. This establishes the ramp in specified limits, rather than proving every local Floquet unitary is a random matrix. [@chan2018minimal]
+
+A related large $q$ model turns the pairing sum into a one dimensional $n$ state Potts partition function. Each site selects a cyclic shift; a wall between neighboring shifts costs a time dependent amount. If a wall weight behaves as $e^{-\epsilon n}$, the rough criterion for eliminating walls along a length $L$ chain is $Le^{-\epsilon n}\ll1$. Thus the crossover **Thouless time** can scale as
+
+$$
+n_{\mathrm{Th}}\sim\frac{\ln L}{\epsilon}.
+$$
+
+This is a spectral mixing time in period units; it is model dependent and is not universally the time needed to transport a charge across the sample. The Potts symmetry itself is an enhancement in the large $q$ limit; finite $q$ retains more detailed cyclic pairing structure. Conservation laws and other slow modes can change the Thouless time. [@chan2018spectral]
+
+### Localized and ordered Floquet phases
+
+Periodicity does not guarantee heating. Strong spatial disorder and appropriate interactions can lead to Floquet many body localization in the models studied in the review, with local memory and a failure of infinite temperature thermalization. Special Clifford constructions give solvable transitions related to percolation of finite active regions. General stability questions for localization, especially at very long times and in higher dimensions, should not be inferred from those solvable constructions.
+
+A drive can also support phases whose defining feature uses the entire period. In a discrete time crystal, a local order parameter returns after two or more periods although the drive repeats after one. An idealized period operator $W=P e^{-iH_Z}$, where $P=\prod_jX_j$ flips an Ising ordered system and $[P,H_Z]=0$, gives $W^\dagger Z_jW=-Z_j$ when $H_Z$ is diagonal in $Z$. Thus $\langle Z_j(n)\rangle=(-1)^n\langle Z_j(0)\rangle$. Exact sign flipping in a tuned pulse is only a demonstration of period doubling. A phase requires rigidity against allowed perturbations and a mechanism such as localization or a long prethermal regime to prevent immediate heating. [@else2016timecrystal]
+
+In two dimensions, an anomalous Floquet insulator can have a localized bulk and unidirectional edge transport. One can picture a sequence of swaps around plaquettes: bulk paths close after a period while boundary paths translate along the edge. The full within period motion contains information absent from a static effective band picture. The noninteracting anomalous Floquet–Anderson insulator supplies a precise realization with localized bulk states and protected chiral edge modes; interacting extensions require their own assumptions. [@titum2016anomalous]
+
+## Dual unitarity: contract the circuit sideways {#sec-str-dual}
+
+### Two independent unitarity conditions
+
+A two site gate has components $U_{cd,ab}$, with input indices $a,b$ and output indices $c,d$. Ordinary unitarity groups the indices as $(ab)$ and $(cd)$. Regroup the same four index tensor as
+
+$$
+\widetilde U_{(b,d),(a,c)}=U_{(c,d),(a,b)}.
+$$ {#eq-str-reshuffle}
+
+The gate is **dual unitary** if both $U$ and $\widetilde U$ are unitary matrices. The second condition is a reshuffling condition, not an additional assertion about the inverse $U^\dagger$.
+
+SWAP, $U\ket{a,b}=\ket{b,a}$, is a simple example: reshuffling still gives a permutation matrix. The identity gate is not dual unitary under @eq-str-reshuffle: its reshuffling has rank one. More generally, phase decorated swaps $U\ket{a,b}=e^{i\phi_{ab}}\ket{b,a}$ are dual unitary because reshuffling remains a permutation with unit modulus entries. Multiplication by single site unitaries on the input or output legs preserves the property and produces useful interacting families.
+
+SWAP also shows why dual unitarity alone does not imply chaos. A pure translation of independent degrees of freedom retains abundant memory. Some dual unitary models are integrable or nonergodic; additional mixing conditions distinguish the chaotic cases.
+
+### Light ray correlations and a finite channel
+
+Consider traceless single site observables at infinite temperature in an infinite dual unitary brickwork circuit. Ordinary unitarity cancels gates outside their causal cone. Dual unitarity allows analogous cancellations in the spatial direction. For the suitable lattice parities, only the light rays $x=\pm t$ can support a nonzero two point function; the interior and exterior cancel. The statement concerns these infinite temperature two point functions, not all correlations in every possible entangled initial state.
+
+The surviving light ray reduces to powers of a one site quantum channel. One representative channel, with directions chosen according to the circuit geometry, is
+
+$$
+\Phi(A)=\frac1q\operatorname{Tr}_1[U^\dagger(A\otimes I)U].
+$$ {#eq-str-dual-channel}
+
+The partial trace keeps the other output site. The channel is unital, preserves the normalized trace, and contracts the Hilbert–Schmidt norm. Thus $\Phi(I)=I$ and its other eigenvalues satisfy $|\lambda|\leq1$. A light ray correlation has the form $q^{-1}\operatorname{Tr}[B\Phi^m(A)]$, or a product of alternating channels when the gate pattern alternates. It decays exponentially when all relevant traceless eigenvalues lie strictly inside the unit circle. A traceless eigenoperator with $|\lambda|=1$ instead retains memory. This finite channel criterion separates mixing from exceptional nonmixing gates.
+
+For special initial states and solvable dual unitary families, entanglement growth can saturate the cut bound even at finite $q$. Their leading tension is flat for $|v|\leq1$, and the maximal entanglement velocity is one in the layer convention. Exact finite time formulas have hypotheses on the initial state; statements for arbitrary product states are often leading long time statements. [@bertini2019entanglement]
+
+Another application concerns the eigenstate thermalization hypothesis: in a thermalizing system, local operator matrix elements in the Floquet eigenbasis have a smooth spectral envelope and small fluctuations, while typical diagonal elements agree with the equilibrium expectation. In suitable mixing dual unitary families, exactly computable channels and spectral functions make parts of this hypothesis quantitatively testable. Dual unitarity alone does not imply it, as the SWAP counterexample already shows. [@fritzsch2021eth]
+
+The sideways contraction also simplifies the spectral form factor. At fixed period count $n$, the spatial transfer problem has $n$ paired states associated with cyclic time shifts. In suitable disorder averaged chaotic dual unitary ensembles these are the only contributions of unit modulus in the thermodynamic limit, yielding the random matrix ramp at fixed $n$ as $L\to\infty$. There is no growing logarithmic Thouless delay in that limit. Time reversal symmetry changes the ensemble prediction, and SWAP type exceptions must be excluded. [@bertini2021sff]
+
+There are extensions with more than two useful arrows of time, including triunitary circuits. Related tensor constructions are unitary or maximally entangled under several leg bipartitions. These are additional algebraic constraints whose main role here is to enlarge the set of exactly contractible spacetime geometries. A generic circuit, viewed sideways, is nonunitary; that fact will become useful for monitored dynamics.
+
+## Clifford gates and stabilizer states {#sec-str-clifford}
+
+### Compressing the state without suppressing entanglement
+
+A qubit Clifford unitary sends every Pauli string to a Pauli string up to a phase. It therefore evolves one basis operator without generating a superposition of strings. A standard generating set consists of
+
+$$
+H=\frac{X+Z}{\sqrt2},\qquad
+S=\begin{pmatrix}1&0\\0&i\end{pmatrix},\qquad
+\operatorname{CNOT}\ket{a,b}=\ket{a,b\oplus a}.
+$$ {#eq-str-clifford-gates}
+
+For example, $HXH=Z$, $SXS^\dagger=Y$, and CNOT maps $X_1\mapsto X_1X_2$, $Z_2\mapsto Z_1Z_2$. Adding the non-Clifford phase gate $T=\operatorname{diag}(1,e^{i\pi/4})$ to these generators gives a universal gate set for quantum computation.
+
+A pure stabilizer state is the common $+1$ eigenstate of $L$ independent commuting Pauli operators $g_1,\ldots,g_L$. Its density matrix is
+
+$$
+\rho=2^{-L}\prod_{j=1}^L(I+g_j)
+=2^{-L}\sum_{g\in\mathcal G}g,
+$$ {#eq-str-stabilizer-rho}
+
+where $\mathcal G$ is the group generated by the stabilizers. The product formula is normalized because only the identity term has nonzero trace. Updating a Clifford circuit means updating its $L$ generators, each stored by $O(L)$ binary data plus a phase. Storage is $O(L^2)$ rather than $O(2^L)$. Pauli measurements can also be performed using commutation relations and elementary binary linear algebra. This efficient description assumes a stabilizer initial state and appropriate measurements; arbitrary input amplitudes do not become cheap merely because the later circuit is Clifford. [@aaronson2004stabilizer]
+
+### Deriving the stabilizer entropy
+
+Let $\mathcal G_A$ be the subgroup of stabilizers supported entirely within a region $A$ of $|A|$ qubits. Partial tracing @eq-str-stabilizer-rho removes every term acting nontrivially outside $A$:
+
+$$
+\rho_A=2^{-|A|}\sum_{g\in\mathcal G_A}g_A.
+$$
+
+If $\mathcal G_A$ has $r_A$ independent generators, its sum is $2^{r_A}$ times a projector of rank $2^{|A|-r_A}$. Every nonzero eigenvalue of $\rho_A$ is therefore $2^{-(|A|-r_A)}$, and
+
+$$
+S_n(A)=(|A|-r_A)\ln2
+$$ {#eq-str-stabilizer-entropy}
+
+for every Rényi index, including the von Neumann entropy. The equality of all Rényi entropies follows from the flat nonzero spectrum, a special property absent in generic Haar states.
+
+For a Bell pair, the generators are $X_1X_2$ and $Z_1Z_2$. Neither lies entirely in the first qubit, so $r_A=0$ and $S(A)=\ln2$. The state is maximally entangled yet needs only two short strings to specify it.
+
+Random local Clifford dynamics produces ballistic stabilizer spreading and ballistic state entanglement. Generators are not unique: multiplying one by another leaves the state unchanged. Extracting entropy from endpoint motion therefore requires a convenient generator gauge and a collective process, rather than simply adding lengths of arbitrary stabilizers. Suitable gauges lead to analogies with biased exclusion processes.
+
+### What a design reproduces
+
+A unitary $k$ design matches the Haar averages of polynomials with at most $k$ copies of $U$ and $k$ copies of $U^*$. The multiqubit Clifford group is an exact unitary 3 design. Consequently uniformly sampled Clifford gates reproduce certain Haar averaged OTOCs, endpoint densities, and purities exactly, because these require sufficiently low moments. They do not reproduce all entropy distributions or all sample fluctuations. To define operator entanglement, vectorize an operator as $A=\sum_{ab}A_{ab}\ket{a}\bra{b}\mapsto\sum_{ab}A_{ab}\ket{a}\otimes\ket{b}$ and normalize this vector; a spatial region includes both copies of each of its sites. A single Clifford evolved Pauli has zero operator entanglement across every spatial cut: as an operator state it is a product of single site operator vectors. A Haar evolved Pauli is generally a superposition with nonzero operator entanglement. These can nevertheless share selected second moment averages. [@zhu2017design]
+
+Charge conserving Clifford dynamics is especially restricted and cannot generally reproduce the coexistence of a diffusing density amplitude and a ballistic emitted operator cloud described above. Restricted ensembles should be checked against the observable and symmetry of interest, rather than assumed to model every aspect of generic chaos.
+
+## Continuous time noise and Gaussian simulation {#sec-str-brownian-gaussian}
+
+### Brownian unitary dynamics
+
+Random evolution need not use discrete Haar gates. Let $h_\alpha$ be local Hermitian operators and $dB_\alpha$ independent real Brownian increments with $\overline{dB_\alpha dB_\beta}=g_\alpha\delta_{\alpha\beta}dt$. The infinitesimal unitary is $e^{-i\sum_\alpha h_\alpha dB_\alpha}$. Expanding through second order gives an averaged density matrix equation
+
+$$
+\partial_t\overline\rho=-\frac12\sum_\alpha g_\alpha
+ [h_\alpha,[h_\alpha,\overline\rho]].
+$$ {#eq-str-brownian-lindblad}
+
+The double commutator is the noise average of unitary evolution; each trajectory remains unitary. Second moments of operator coefficients satisfy related classical equations. Spatially local Brownian models can have ballistic spreading and broadened fronts, while all to all models have different geometry and can scramble on times proportional to $\ln L$. A continuous time Brownian model must not inherit numerical velocities from the discrete brickwork convention. [@zhou2019brownian]
+
+Clifford evolution, by contrast, uses a discrete gate set modulo phases. A continuously varying path through Clifford operations is locally constant, so generic continuous time Clifford Hamiltonian motion is not a nontrivial replacement for discrete Clifford gates.
+
+### Free fermions retain a covariance description
+
+For $L$ fermion modes introduce $2L$ Majorana operators $\gamma_a$ with $\{\gamma_a,\gamma_b\}=2\delta_{ab}$. A quadratic Hamiltonian has the form
+
+$$
+H=\frac{i}{4}\sum_{a,b}h_{ab}\gamma_a\gamma_b,
+\qquad h=-h^{\mathsf T}\ \text{real}.
+$$
+
+Its unitary action rotates Majoranas linearly, $\gamma_a\mapsto\sum_bR_{ab}\gamma_b$, with $R$ real orthogonal. A fermionic Gaussian state is determined by its covariance matrix
+
+$$
+\Gamma_{ab}=\frac{i}{2}\operatorname{Tr}(\rho[\gamma_a,\gamma_b]),
+\qquad\Gamma\mapsto R\Gamma R^{\mathsf T}.
+$$ {#eq-str-gaussian-covariance}
+
+Higher correlation functions follow from Wick's theorem: they are signed sums of products of two point functions. Computing them therefore needs a matrix of size $2L$, rather than a vector of size $2^L$. If the restricted covariance of a region has eigenvalues $\pm i\nu_j$, $0\leq\nu_j\leq1$, then
+
+$$
+S(A)=\sum_j h\!\left(\frac{1+\nu_j}{2}\right),
+\qquad h(p)=-p\ln p-(1-p)\ln(1-p).
+$$ {#eq-str-gaussian-entropy}
+
+Each $\nu_j$ describes an independent entanglement mode. Quadratic dynamics can generate substantial state entanglement while preserving this compact structure. Interactions that create genuinely non-Gaussian correlations invalidate covariance closure.
+
+### Quantum symmetric exclusion
+
+A useful noisy free fermion example uses nearest neighbor hopping with complex Brownian amplitudes,
+
+$$
+dH=\sqrt\kappa\sum_j
+ \left(c_{j+1}^\dagger c_j\,dW_j+c_j^\dagger c_{j+1}\,dW_j^*\right),
+\qquad \overline{dW_jdW_k^*}=\delta_{jk}dt.
+$$
+
+Each trajectory remains a Gaussian number conserving evolution. After averaging, the mean occupation follows a diffusion equation,
+
+$$
+\partial_t\overline{\langle n_j\rangle}
+=\kappa\left(\overline{\langle n_{j-1}\rangle}
+-2\overline{\langle n_j\rangle}
++\overline{\langle n_{j+1}\rangle}\right).
+$$
+
+At this level the process resembles the classical symmetric simple exclusion process, whose particles hop to empty neighbors. The **quantum symmetric simple exclusion process**, QSSEP, retains fluctuating coherences such as $\langle c_i^\dagger c_j\rangle$ in individual trajectories. Higher noise moments of these coherences contain information absent from the mean occupation. Boundary injection and removal create exactly tractable nonequilibrium steady states with nontrivial coherence statistics. The crossover from this Gaussian structure to interacting chaotic dynamics is a separate problem, not captured by the classical mean diffusion equation. [@bernard2019qssep]
+
+## Reversible automata as quantum circuits {#sec-str-automata}
+
+A reversible classical update permutes computational basis configurations. Promoting it to a quantum unitary, with optional configuration dependent phases, gives
+
+$$
+U\ket{n}=e^{i\theta(n)}\ket{\pi(n)}.
+$$ {#eq-str-automaton}
+
+For $U$ to be a local circuit, $\pi$ and the phases must themselves be assembled from local reversible gates. An arbitrary permutation of all $2^L$ configurations is not automatically efficient to apply.
+
+Computational basis trajectories remain classical and cost polynomial resources for a polynomial depth circuit. Superpositions need not remain unentangled. A controlled phase is already an automaton gate with the identity permutation: applied to $\ket{+}\ket{+}$ it gives an entangled state. Repeated local automaton gates can create a volume law from suitable product superpositions.
+
+These circuits are less restrictive than Clifford circuits. A three bit Toffoli permutation sends some Pauli operators to superpositions of Pauli strings. Nevertheless, an operator matrix element transforms by a permutation on the doubled configurations $(m,n)$ with a known phase, so selected operator quantities can be sampled by classical forward and backward trajectories. Efficient simulation means this access to basis trajectories and specified observables; arbitrary entangled input states or arbitrary output amplitudes do not all admit efficient exact evaluation.
+
+Automaton models provide tractable settings for ballistic operator fronts, nontrivial operator entanglement, kinetic constraints, subsystem conservation, and subdiffusive transport. Their OTOCs can be studied by evolving pairs of configurations that initially differ locally. Certain automata are integrable, while others emulate chaotic spreading. Low entanglement is therefore not the organizing principle of their tractability.
+
+### Rule 54 and soliton scattering
+
+A concrete reversible update acts on the center bit of a three bit neighborhood:
+
+$$
+(a,b,c)\longmapsto(a,b\oplus a\oplus c\oplus ac,c),
+\qquad a,b,c\in\{0,1\}.
+$$ {#eq-str-rule54}
+
+All arithmetic is modulo two. Since $a\oplus c\oplus ac$ is the Boolean OR of $a,c$, the center flips if at least one neighbor is one. Applying this involution on every even center, then every odd center, defines the reversible Rule 54 circuit. Centers in each substep do not change their controls, making each layer well defined and reversible. These three site substeps define the automaton clock; numerical velocities in this model should not be identified with those of a nearest neighbor two site brickwork layer.
+
+Its natural excitations are left and right moving solitons. Collisions cause a fixed time delay rather than particle production. The resulting scattering structure permits exact stationary states, transport calculations, and operator or entanglement calculations that remain difficult in generic interacting chains. At finite density, soliton velocities are dressed by collision delays; this is the basic physical idea of generalized hydrodynamics. The solvable excitation content replaces the featureless Haar cluster model.
+
+Reversible automata can also seed quantum many body scar constructions. A short classical orbit $\ket{n_0}\to\cdots\to\ket{n_{p-1}}\to\ket{n_0}$ gives $p$ eigenstates formed, after absorbing the orbit phases into a choice of basis and boundary twist, by a discrete Fourier transform along that orbit. These occupy only a tiny invariant subspace and can retain unusual local order or low entanglement. Embedding such orbits in a larger quantum drive can produce atypical nonthermal eigenstates inside an otherwise thermalizing spectrum. A finite orbit alone does not prove that the rest of the spectrum thermalizes; that is an additional property to establish in a specific model. [@iaconis2019subsystem; @prosen2016rule54]
+
+## Choosing the right solvable limit {#sec-str-compare}
+
+| Structure | Compressed description or exact tool | Feature that needs care |
+|:--|:--|:--|
+| Independent Haar gates | Markov weights and replica pairings | Statements usually concern an ensemble moment |
+| Conserved charge | Diffusing amplitudes plus emitted strings | Higher Rényi growth and tails can differ |
+| Floquet repetition | Eigenphases and cyclic history pairings | Repeated gates are not independent in time |
+| Dual unitarity | Contraction in two spacetime directions | Additional mixing assumptions distinguish chaos |
+| Clifford gates | Binary stabilizer generators | Generic inputs and higher moments are not automatic |
+| Quadratic fermions | Covariance matrix | Non-Gaussian interactions break closure |
+| Reversible automata | Classical configuration trajectories | Efficient access depends on state and observable |
+
+These tools solve different parts of the many body problem. Matching a selected Haar average can be very useful without matching the full distribution. Exact tractability of a correlator can coexist with complicated states. Conversely, the existence of an efficient representation need not imply weak entanglement.
+
+## Exercises with solutions {#sec-str-exercises}
+
+1. **Diffusion without norm loss.** Starting from @eq-str-diffusion, verify conservation of $\int a\,dx$ and decay of $\int a^2dx$.
+
+   *Solution.* One integration by parts gives $d\int a/dt=D[\partial_xa]_{-\infty}^{\infty}=0$. Two factors of $a$ give @eq-str-emission. The missing squared norm enters nonlocal strings, so the full operator norm stays fixed.
+
+2. **Fragmentation graph.** In a binary four site chain, check that $0110$ and $1001$ have identical $Q,P$. Why does this not imply that every pair with the same $Q,P$ is connected by three site gates?
+
+   *Solution.* Both have two particles and position sum five when positions are $1,2,3,4$. Connectivity also requires a sequence of allowed local moves. For binary occupations three site patterns have no distinct rearrangement with both the same number and position sum, so these four site configurations cannot be connected by a nontrivial three site charge and dipole conserving update.
+
+3. **A spectral diagnostic.** For $W=e^{i\theta}I_D$, compute $K(n)$ and compare it with the CUE result.
+
+   *Solution.* $\operatorname{Tr}W^n=De^{in\theta}$, giving $K(n)=D^2$ at every time. The degenerate spectrum has neither the CUE ramp nor its plateau value.
+
+4. **A nonchaotic dual unitary.** Compute @eq-str-dual-channel for SWAP.
+
+   *Solution.* $U^\dagger(A\otimes I)U=I\otimes A$, so $\Phi(A)=A$. Every local operator is a unit eigenoperator. Light ray correlations persist rather than decay, illustrating the need for a mixing condition.
+
+5. **Stabilizer rank and entropy.** A three qubit GHZ state has generators $X_1X_2X_3,Z_1Z_2,Z_2Z_3$. Find the entropy of the first two qubits.
+
+   *Solution.* The subgroup wholly in $A=\{1,2\}$ has one independent generator $Z_1Z_2$, so $r_A=1$. Equation @eq-str-stabilizer-entropy gives $S_n(A)=(2-1)\ln2=\ln2$ for every $n$.
+
+6. **A Rule 54 inverse.** Prove that one local update in @eq-str-rule54 is its own inverse.
+
+   *Solution.* The control bits $a,c$ do not change. Applying the same exclusive OR to $b$ twice cancels it. The inverse of a full period reverses the order of the odd and even layers, using the same local gates.
+
+7. **A Gaussian entropy mode.** What entropy does one restricted covariance pair with $\nu=0$ contribute? What about $\nu=1$?
+
+   *Solution.* Equation @eq-str-gaussian-entropy gives $h(1/2)=\ln2$ and $h(1)=0$. A maximally mixed entanglement mode contributes one qubit of entropy; a pure mode contributes none.

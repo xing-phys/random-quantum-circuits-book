@@ -11,4 +11,8 @@ __pycache__/
 *.out
 *.synctex.gz
 .DS_Store
+/index.tex
+/index.pdf
 
+
+**/*.quarto_ipynb

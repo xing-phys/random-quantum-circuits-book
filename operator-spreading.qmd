@@ -1,0 +1,182 @@
+# Operators, scrambling, and correlation decay {#sec-operator-spreading}
+
+Entanglement describes a state across a spatial boundary. Operator spreading asks a different question: where does information initially stored in a local observable go? An exact quantum evolution in a huge operator space becomes a simple stochastic growth process after averaging Haar gates. This chapter derives that reduction and uses it to distinguish an operator front from the much rarer histories controlling ordinary correlation functions.
+
+We use one brickwork layer as one unit of time and lattice spacing one. The maximum propagation speed is one site per layer. To follow the information carried by a state evolving as $\ket{\psi(t)}=U(t)\ket{\psi(0)}$, it is convenient to evolve operators by
+
+$$
+O(t)=U(t)O(0)U(t)^\dagger.
+$$ {#eq-op-convention}
+
+This is the reverse of the usual Heisenberg convention $U^\dagger O U$. Both conventions give the same statistical spreading laws for the independent Haar ensemble. If $O(0)\ket{\psi(0)}=a\ket{\psi(0)}$, then $O(t)\ket{\psi(t)}=a\ket{\psi(t)}$: the initial label survives, but its readout becomes nonlocal.
+
+## An operator is a vector {#sec-op-space}
+
+For an $L$ qubit chain choose the Pauli string basis $\mathcal S=\{I,X,Y,Z\}^{\otimes L}$, and distinguish the normalized trace from the ordinary trace:
+
+$$
+\langle A,B\rangle=q^{-L}\operatorname{Tr}(A^\dagger B)
+\equiv\operatorname{tr}_{\!\infty}(A^\dagger B).
+$$
+
+The notation $\operatorname{tr}_{\!\infty}$ is specific to this chapter and denotes an infinite temperature expectation. Pauli strings are orthonormal in this inner product. A Hermitian operator of unit norm has the expansion
+
+$$
+O(t)=\sum_{S\in\mathcal S}a_S(t)S,
+\qquad a_S(t)=\operatorname{tr}_{\!\infty}[SO(t)],
+\qquad\sum_S a_S(t)^2=1.
+$$ {#eq-op-expansion}
+
+For a general $q$, use a local orthonormal operator basis containing $I$ and $q^2-1$ traceless operators. Coefficients can be complex, in which case the weights are $|a_S|^2$.
+
+Conjugation by a gate is a unitary map in operator space because it preserves the Hilbert–Schmidt inner product. In a Hermitian basis it is a real orthogonal matrix,
+
+$$
+a_R(t+1)=\sum_S W_{RS}(t)a_S(t),
+\qquad
+W_{RS}=\operatorname{tr}_{\!\infty}(R U_{t+1} S U_{t+1}^\dagger).
+$$
+
+Calling $a_S$ an operator wavefunction is therefore literal linear algebra. A quantum state on $L$ qubits lies in dimension $2^L$; an operator lies in dimension $4^L$. A string can have a large spatial support while its coefficient in a particular basis remains tiny.
+
+## Why Haar averaging produces a Markov process {#sec-op-markov}
+
+Focus on one two site gate. There are $q^4$ orthonormal basis operators on its two sites: the identity, and $q^4-1$ traceless ones. Unitary conjugation leaves the identity invariant. Haar invariance treats the traceless subspace isotropically at the level of its second moment. Thus a nonidentity input redistributes its **averaged weight** equally among the $q^4-1$ nonidentity outputs:
+
+$$
+T_{R S}=
+\begin{cases}
+1,&R=S=I\otimes I,\\
+(q^4-1)^{-1},&R\ne I\otimes I,\ S\ne I\otimes I,\\
+0,&\text{otherwise}.
+\end{cases}
+$$ {#eq-op-local-markov}
+
+Cross terms between inequivalent traceless input components vanish in the Haar second moment. Since gates at the new layer are independent of all earlier gates, averaging can be done one layer at a time:
+
+$$
+\overline{|a_R(t+1)|^2}=\sum_S T_{RS}(t)\overline{|a_S(t)|^2}.
+$$ {#eq-op-weight-markov}
+
+$T$ has nonnegative entries and columns summing to one. It defines an exact classical Markov process for these ensemble weights. A realization of the quantum circuit still evolves coherently; the classical reduction concerns a particular averaged second moment. It does not represent an actual measurement of the string at every step. [@nahum2018operators; @keyserlingk2018hydrodynamics]
+
+It is often enough to record whether each site carries identity or a traceless factor. An empty pair stays empty; any occupied pair is randomly repopulated subject to not becoming completely empty. This is a cluster growth model, with fluctuations and occasional local retreats. The large number of extended strings favors outward growth.
+
+## Counting the front speed {#sec-op-front}
+
+Suppose a gate touches the right edge of a string and the site just beyond it. Among its $q^4-1$ possible nonidentity outputs, exactly $q^2-1$ have identity on the right site. The probability that the right site remains empty is
+
+$$
+p_- =\frac{q^2-1}{q^4-1}=\frac{1}{q^2+1},
+\qquad p_+=1-p_-=\frac{q^2}{q^2+1}.
+$$ {#eq-op-hop-prob}
+
+Following the edge on the staggered spacetime lattice gives a walker with outward step probability $p_+$ and inward step probability $p_-$. Its vertex coordinate differs from the last occupied physical site by a bounded parity dependent shift. This distinction affects short time offsets, not the drift or long time variance. For a right edge initially at the origin,
+
+$$
+\langle x_R(t)\rangle=v_Bt+O(1),
+\qquad v_B=p_+-p_-=\frac{q^2-1}{q^2+1},
+$$ {#eq-op-butterfly}
+
+and
+
+$$
+\operatorname{Var}x_R(t)=4p_+p_-t+O(1)=2D_{\mathrm f}t+O(1),
+\qquad D_{\mathrm f}=\frac{2q^2}{(q^2+1)^2}.
+$$ {#eq-op-front-diffusion}
+
+The left edge has opposite drift. When the two edges are adjacent they are not independent, but their interactions do not alter the asymptotic speed of a large growing string. The light cone speed is one, while for qubits $v_B=3/5$ and $D_{\mathrm f}=8/25$. As $q\to\infty$ the outward step becomes certain, $v_B\to1$, and this source of front broadening vanishes.
+
+At large scales the right endpoint density satisfies a biased diffusion equation,
+
+$$
+\partial_t\rho_R=-v_B\partial_x\rho_R+D_{\mathrm f}\partial_x^2\rho_R.
+$$ {#eq-op-drift-diffusion}
+
+Its Gaussian solution has width $\sqrt{2D_{\mathrm f}t}$. The diffusion constant here characterizes an information front; it is not the diffusion constant of a conserved particle density.
+
+## From operator weights to an OTOC {#sec-op-otoc}
+
+For Hermitian unitary qubit observables $O(t)$ and $V_x$, define the squared commutator
+
+$$
+C(x,t)=\frac12\operatorname{tr}_{\!\infty}
+ \bigl([O(t),V_x]^\dagger[O(t),V_x]\bigr)
+=1-\operatorname{Re}\operatorname{tr}_{\!\infty}[O(t)V_xO(t)V_x].
+$$ {#eq-op-otoc}
+
+This four operator expression is called an out of time ordered correlator because its operator order does not follow increasing or decreasing time. If $O(t)$ and $V_x$ have disjoint support, $C=0$ exactly in a finite depth circuit. If two Pauli strings anticommute, their contribution to $C$ is two; if they commute, it is zero.
+
+In an equilibrated region of a qubit operator string, the local factor is approximately uniform over $I,X,Y,Z$. For a fixed $V_x=Z_x$, two of those four factors anticommute. Therefore $C$ approaches one behind the front. This explains both its normalization and its relation to the probability that the expanding string has reached $x$. Near a well separated right front,
+
+$$
+\overline{C(x,t)}\simeq
+\frac12\operatorname{erfc}\!\left(
+\frac{x-v_Bt}{\sqrt{4D_{\mathrm f}t}}\right),
+$$ {#eq-op-front-profile}
+
+up to microscopic corrections and the local equilibration assumption. The average approaches a plateau over a width proportional to $t^{1/2}$. This statement does not require that the front of each realization wander as a sharp step; coherent Haar circuits and Clifford circuits have different realization fluctuations even when some ensemble averages coincide.
+
+![Illustration of a drifting, broadening right front using the continuum error function profile, with chosen parameters $v=0.7$ and $D_{\mathrm f}=0.18$. The curves are analytic illustrations, not numerical or experimental data, and these chosen parameters do not represent a specified Haar local dimension. The continuum tails shown here do not enforce the exact microscopic circuit light cone.](figs/operator-front){#fig-op-front width=95%}
+
+A fixed speed ray $x=vt$ outside the typical front probes large deviations, not just the central Gaussian. For the endpoint random walk the exact binomial probability has exponential rate
+
+$$
+I(v)=\frac{1+v}{2}\ln\frac{(1+v)/2}{p_+}
+ +\frac{1-v}{2}\ln\frac{(1-v)/2}{p_-},
+\qquad |v|\leq1.
+$$ {#eq-op-large-deviation}
+
+$I(v_B)=0$, and expanding around $v_B$ gives $(v-v_B)^2/(4D_{\mathrm f})$. Farther away the quadratic approximation fails. A single spacetime independent Lyapunov exponent therefore does not fully characterize this lattice front. In particular, the existence of a growing OTOC is not by itself a proof of quantum chaos: integrable systems can also spread operators.
+
+In $d>1$ spatial dimensions, the occupied cluster has a fluctuating $(d-1)$ dimensional boundary. For the simplest isotropic noisy growth problem that boundary is in the KPZ interface class. In two spatial dimensions the front width scales as $t^{1/3}$, with possible lattice anisotropy in the mean shape. This is a different geometric use of KPZ from the entropy polymer in @sec-ent-kpz. Exponents depend on the dimension of the fluctuating object, so the one dimensional chain's endpoint has the diffusive exponent $1/2$ instead.
+
+## Ordinary correlations select rare histories {#sec-op-correlators}
+
+Consider a local autocorrelation transported to $x$,
+
+$$
+G(x,t)=\operatorname{tr}_{\!\infty}[Z_xO_0(t)],\qquad O_0(0)=Z_0.
+$$
+
+Equation @eq-op-expansion says that $G$ is precisely the coefficient of the single site string $Z_x$. The operator as a whole has typically spread across a region of length proportional to $t$, but the correlator selects the tiny component that is local again at the final time. A large norm of the extended operator therefore does not imply a large local correlator.
+
+For the independent Haar ensemble the mean $\overline G$ vanishes after the relevant gate average. The positive quantity $\overline{|G|^2}$ is nonzero and equals the Markov probability to end in the specified single site string. Its endpoint histories begin with left and right boundaries together, and must bring those boundaries together again at $(x,t)$. This is a rare return condition. In the absence of slow conserved modes the asymptotic form is
+
+$$
+\overline{|G(vt,t)|^2}\sim e^{-r(v)t}
+$$ {#eq-op-correlator-rate}
+
+apart from possible subexponential factors. We define $r(v)$ by this equation, without extracting an additional factor of $s_{\mathrm{eq}}$; conventions in the literature differ.
+
+Two kinds of constrained history can compete. A **thin** history keeps the two boundaries within a microscopic distance throughout. A **fat** history separates them over an intermediate interval and recontracts at the end. Fat here means broader than a microscopic string, not the unconstrained ballistically growing operator. In the one dimensional Haar brickwork model the optimal histories undergo a binding transition at $|v|=v_B$: thin histories dominate at larger speeds and unbound histories at smaller speeds. The change produces a nonanalyticity in the exponential decay rate. Equality of this critical speed with $v_B$ relies on special Haar circuit weights and is not a general theorem for all chaotic systems. [@nahum2022correlators]
+
+The logic also clarifies a numerical strategy. To compute a local correlation, one need not always retain every part of the enormous extended operator with equal accuracy. Approaches that suppress long strings can sometimes preserve the hydrodynamic or rare return contributions of interest. Their accuracy must be checked for the chosen observable: erasing all long strings without control can remove backflow into short strings and give an incorrect correlation.
+
+## A physical interpretation of scrambling {#sec-op-scrambling}
+
+Suppose a qubit's initial $Z$ eigenvalue records a classical bit. After evolution, the global operator $O(t)$ still reads it exactly. A local observer sees only coefficients of operators supported in a small region. As these coefficients shrink, that observer loses access to the bit, even though the full state remains pure and the evolution remains reversible. Reading it requires a more extended and complicated observable.
+
+This is the sense in which simple information is scrambled. It should be distinguished from three related notions. State entanglement depends on both the circuit and the initial state. Operator support depends on the evolving observable. Spectral level statistics require repeated evolution with a fixed unitary. A random circuit can illuminate all three, but none is identical to the others. The structured examples in @sec-structured-unitary make these differences concrete.
+
+## Exercises with solutions {#sec-op-exercises}
+
+1. **One qubit Haar edge.** For a two qubit Haar gate, count outputs with right site identity and verify the outward probability.
+
+   *Solution.* There are $4^2-1=15$ nonidentity strings. Three are $X\otimes I,Y\otimes I,Z\otimes I$. The remaining twelve occupy the right site, so $p_+=12/15=4/5$ and $v_B=2p_+-1=3/5$.
+
+2. **Commutator normalization.** Evaluate $C$ for $O=X,V=Z$ and for $O=Z,V=Z$.
+
+   *Solution.* $[X,Z]=-2iY$, giving $C=2$ with normalized trace. The commuting case gives zero. Averaging equally over $I,X,Y,Z$ gives $(0+2+2+0)/4=1$, the chaotic plateau convention used above.
+
+3. **Large deviation expansion.** Show that the second derivative of $I(v)$ at its minimum is $1/(1-v_B^2)$.
+
+   *Solution.* Differentiating twice gives $I''(v)=1/(1-v^2)$. Since $1-v_B^2=4p_+p_-=2D_{\mathrm f}$, Taylor expansion gives $I(v)=(v-v_B)^2/(4D_{\mathrm f})+\cdots$.
+
+4. **An exact zero.** Can a nearest neighbor depth $t$ circuit produce a nonzero commutator between initially single site operators separated by more than $t$ sites?
+
+   *Solution.* No. Each layer enlarges the support by at most one site in each direction. Disjoint supports commute. This is a strict circuit light cone, stronger than the exponentially small tails typical of Hamiltonian Lieb–Robinson bounds.
+
+5. **Front versus correlation.** Why cannot @eq-op-front-profile be used directly as a formula for $G(x,t)$?
+
+   *Solution.* The OTOC sums the weights of many strings that act near $x$. The ordinary correlator projects onto one specified local string. The latter additionally requires the operator to be small at the final time, selecting rare histories rather than the typical expanding cluster.

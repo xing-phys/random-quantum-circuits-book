@@ -1,0 +1,386 @@
+# Structure creates new monitored phases {#sec-structured-monitored}
+
+::: {.callout-note title="Learning goals and scope"}
+
+This chapter covers §4.2 of @fisher2023: measurement-only circuits, symmetry and charge sharpening, topological order, Gaussian fermions, and spacetime duality. The central lesson is that the amount of entanglement does not uniquely identify a phase. We develop explicit examples that have the same entropy scaling but preserve different kinds of information.
+:::
+
+## Measurements can create entanglement {#sec-sm-measurement-only}
+
+A rank-one measurement of a single qubit separates that qubit from the rest of a pure state. A measurement of a **joint** observable need not do so. For example, start with $|+\rangle|+\rangle$, where $|+\rangle=(|0\rangle+|1\rangle)/\sqrt2$, and measure $Z_1Z_2$. Its projectors are
+
+$$
+P_{\pm}=\frac{I\pm Z_1Z_2}{2}.
+$$
+
+The two outcomes have probability $1/2$ and leave
+
+$$
+|\psi_+\rangle=\frac{|00\rangle+|11\rangle}{\sqrt2},
+\qquad
+|\psi_-\rangle=\frac{|01\rangle+|10\rangle}{\sqrt2}.
+$$ {#eq-sm-parity-bell}
+
+Both states have entanglement $\ln2$. The apparatus learned the parity and left the two basis states within that parity sector coherent. It did not learn either spin separately. Measuring $Z_1$ afterward would destroy this Bell entanglement.
+
+This example does not violate the monotonicity of entanglement under local operations on the two sides of a bipartition: measuring their joint parity is a nonlocal operation with respect to the partition $1|2$. In a chain it can still be a spatially local two-site operation. The relevant notion of locality must always specify the partition.
+
+A measurement-only circuit repeatedly chooses observables from some ensemble and applies their projectors, with no unitary gates between them. Commuting projectors eventually impose a compatible set of constraints. Noncommuting measurements can undo earlier constraints and redistribute information. This is the origin of nontrivial dynamics and, for suitable ensembles, a stable volume law [@ippoliti2021measurementonly]. Mutual incompatibility is an organizing principle, not a statement that any pair of noncommuting observables necessarily produces an entangling phase.
+
+### The stabilizer update makes the mechanism concrete
+
+For a pure stabilizer state on $L$ qubits, let $g_1,\ldots,g_L$ be independent commuting Pauli generators. Measure a Pauli string $M$ with $M^2=I$. There are two possibilities. If $M$ already belongs, up to sign, to the stabilizer group, the outcome is deterministic. Otherwise $M$ anticommutes with at least one generator. Choose such a generator, say $g_1$, multiply the other anticommuting generators by $g_1$, and replace $g_1$ with the measured signed operator $mM$.
+
+The replacements commute with $M$ because a product of two anticommuting operators commutes with it. The number of independent generators stays $L$, preserving purity. Yet products can become much longer strings than the measured operator. Local measurements can thus build nonlocal stabilizers rather than simply shortening them. Competition among different measurement types can sustain extensive entanglement. In mixed stabilizer states there is a third case: a commuting independent measurement adds a generator and removes one logical qubit of uncertainty.
+
+## Symmetry constrains individual trajectories {#sec-sm-symmetry}
+
+Let $V(g)$ represent an on-site symmetry group $G$. A particularly strong and useful condition is
+
+$$
+[U,V(g)]=0,\qquad [P_m,V(g)]=0
+$$ {#eq-sm-strong-symmetry}
+
+for each gate and each outcome projector. An initial symmetry eigenstate then remains in its symmetry sector on every trajectory. This is stronger than requiring only the averaged channel to respect the symmetry; a channel can be symmetric because its outcomes are permuted by $G$ even when an individual outcome does not preserve a sector.
+
+The replica description now contains physical symmetry operations in addition to permutations between copies. The enlarged structure allows distinct trajectory ensembles within both area-law and volume-law regimes. Examples include order visible only in squared correlations and symmetry-protected topological order. Since the theory describes distributions of evolving states, equilibrium classifications of a single ground state do not alone classify all these dynamical possibilities.
+
+### A soluble Ising example: two area laws, two kinds of order {#sec-sm-ising}
+
+On an open chain, choose measurements of $Z_iZ_{i+1}$ with relative probability $p_Z$ and of $X_i$ with probability $p_X=1-p_Z$. Use a homogeneous protocol that treats the two types symmetrically under the usual duality. Both commute with
+
+$$
+P=\prod_{i=1}^{L}X_i.
+$$
+
+Start in $|+\rangle^{\otimes L}$, with $P=+1$. If only $Z_iZ_{i+1}$ are measured and every bond has been sampled, their outcomes $m_i=\pm1$ fix all relative spin orientations. Choose $z_1=+1$, and recursively set $z_{i+1}=m_i z_i$. Two computational-basis configurations satisfy all bond constraints: $\boldsymbol z$ and $-\boldsymbol z$. The conserved $P=+1$ selects
+
+$$
+|\psi_{\boldsymbol m}\rangle=
+\frac{|\boldsymbol z\rangle+|-\boldsymbol z\rangle}{\sqrt2}.
+$$ {#eq-sm-ising-cat}
+
+For $L=4$ and outcomes $(+1,-1,+1)$ this is $(|0011\rangle+|1100\rangle)/\sqrt2$, using $Z|0\rangle=|0\rangle$. Any nonempty proper interval has entropy $\ln2$: the two restrictions of the configurations are orthogonal on both sides, giving precisely two equal Schmidt values. The state therefore obeys an area law despite correlations across the whole chain.
+
+In a given trajectory,
+
+$$
+\langle Z_i\rangle_{\boldsymbol m}=0,
+\qquad
+\langle Z_iZ_j\rangle_{\boldsymbol m}=
+z_i z_j=\prod_{a=i}^{j-1}m_a.
+$$ {#eq-sm-ising-correlations}
+
+Random outcome signs can make the average two-point function vanish. Its square is one. Define the Edwards--Anderson-type diagnostic
+
+$$
+\chi_{\mathrm{SG}}=
+\lim_{L\to\infty}\frac{1}{L^2}\sum_{i,j}
+\mathbb E\sum_{\boldsymbol m}p_{\boldsymbol m}
+\langle Z_iZ_j\rangle_{\boldsymbol m}^{2}.
+$$ {#eq-sm-spin-glass}
+
+It equals one in this ideal cat limit. If only $X_i$ is measured, each trajectory is an $X$-basis product state. For $i\ne j$, $\langle Z_iZ_j\rangle=0$; the diagonal terms contribute only $1/L$, so $\chi_{\mathrm{SG}}\to0$. There is no volume law in this particular two-ensemble model.
+
+The standard homogeneous measurement-only model has a transition at the self-dual value $p_Z=p_X=1/2$ [@sang2021protected]. A useful picture is a fluctuating collection of GHZ clusters. A bond-parity measurement can join neighboring clusters; a single-site $X$ measurement can remove a spin from such a cluster. The spacetime history maps to a connectivity problem. The ordered phase has a macroscopic connected cluster, whereas the disordered phase has finite clusters. Self-duality locates the threshold for this specific construction; merely writing two measurement probabilities that add to one does not force a transition at one half in an arbitrary model.
+
+The word “spin glass” here refers to random trajectory-dependent orientations and squared long-range correlations. These states have not been obtained by minimizing a conventional spin-glass Hamiltonian at a temperature. The cat superposition also shows why an exactly symmetric finite state can diagnose an ordered phase without having a nonzero one-point magnetization.
+
+### Symmetry-protected order: a cluster-state construction {#sec-sm-spt}
+
+For an even-length chain define the bulk cluster stabilizers
+
+$$
+C_i=Z_{i-1}X_iZ_{i+1}.
+$$ {#eq-sm-cluster-stabilizer}
+
+They commute: neighboring operators have two overlapping anticommuting Pauli pairs, whose signs cancel. They also respect the two symmetries $P_{\mathrm{even}}=\prod_{i\,\mathrm{even}}X_i$ and $P_{\mathrm{odd}}=\prod_{i\,\mathrm{odd}}X_i$. Measuring the bulk $C_i$ can prepare a cluster-state-type trajectory, while measurements of $X_i$ favor a trivial product state. Both sides have an area law, so half-chain entropy alone does not distinguish them.
+
+Multiplying cluster stabilizers on even sites gives a nonlocal string,
+
+$$
+\prod_{j=a}^{b}C_{2j}
+=Z_{2a-1}\left(\prod_{j=a}^{b}X_{2j}\right)Z_{2b+1}.
+$$ {#eq-sm-cluster-string}
+
+All internal $Z$ operators occur twice and cancel. In a state with definite stabilizer eigenvalues, the string expectation is their product, with magnitude one. Its squared, record-averaged expectation is insensitive to random syndrome signs. On an open chain, the bulk stabilizers leave edge degrees of freedom that transform nontrivially under the protecting symmetry. This is the physical content of the one-dimensional symmetry-protected topological distinction: removing the entanglement by a finite-depth circuit requires breaking the symmetry or changing the phase. Without imposing the symmetry, a cluster state can be disentangled by a shallow circuit.
+
+Symmetric monitored circuits with this type of competition support trivial, symmetry-protected, and volume-law phases in explicit models. Certain measurement-only critical lines admit mappings to copies of percolation, while adding unitary gates can change the phase diagram [@lavasani2021spt]. These exact special mappings should be separated from generic finite-$q$ entanglement criticality.
+
+## Conserved charge and charge sharpening {#sec-sm-charge}
+
+Consider qubits with an additive charge
+
+$$
+Q=\sum_i n_i,\qquad n_i=\frac{I-Z_i}{2}.
+$$
+
+Two-site unitaries conserve $n_i+n_{i+1}$, and measurements observe $n_i$. In the basis $|00\rangle,|01\rangle,|10\rangle,|11\rangle$, a conserving two-site gate has the block form
+
+$$
+U=e^{i\phi_0}\oplus U_{2\times2}\oplus e^{i\phi_2}.
+$$ {#eq-sm-charge-gate}
+
+Only the one-particle sector mixes. Every trajectory operator commutes with $Q$. Nevertheless an initial superposition of charges can become concentrated in a single charge sector because measurements reveal information about which sector was occupied. Conservation forbids transitions between sectors; it does not forbid learning the sector.
+
+Write the input as $\sum_Q c_Q|\psi_Q\rangle$, where $|\psi_Q\rangle$ is a normalized state in the eigenspace with total charge $Q$. Let $w_Q=|c_Q|^2$ and let $P(\boldsymbol m|Q)=\|K_{\boldsymbol m}|\psi_Q\rangle\|^2$. Orthogonality of different sectors gives the Bayesian update
+
+$$
+w_Q(\boldsymbol m)=
+\frac{w_QP(\boldsymbol m|Q)}
+{\sum_{Q'}w_{Q'}P(\boldsymbol m|Q')}.
+$$ {#eq-sm-charge-bayes}
+
+The trajectory may remain a pure coherent state across sectors, but its charge probabilities obey this classical formula. A natural uncertainty is
+
+$$
+\operatorname{Var}_{\boldsymbol m}(Q)=
+\sum_Qw_Q(\boldsymbol m)Q^2-
+\left[\sum_Qw_Q(\boldsymbol m)Q\right]^2.
+$$ {#eq-sm-charge-variance}
+
+Conserving monitored circuits exhibit a charge-sharpening transition within an entangling regime [@agrawal2022charge]. In the **charge-fuzzy** regime, weak monitoring does not rapidly distinguish nearby total-charge sectors. In the **charge-sharp** regime, a record reveals that global charge on a much shorter time scale, while neutral quantum information can remain extensively entangled. Sharpening charge is thus less demanding than purifying the entire many-body state.
+
+A clean probe entangles an ancilla with two adjacent charge sectors:
+
+$$
+|\Psi\rangle=\frac{1}{\sqrt2}
+\left(|\psi_Q\rangle|0\rangle_R+
+|\psi_{Q-1}\rangle|1\rangle_R\right).
+$$ {#eq-sm-charge-ancilla}
+
+After a record, the ancilla has probabilities proportional to $P(\boldsymbol m|Q)$ and $P(\boldsymbol m|Q-1)$. Its entropy is the binary entropy of this posterior. In the models described in the review, this diagnostic purifies on a time of order $L$ in the fuzzy regime and on an order-one scale in the sharp regime, away from criticality. Broad initial distributions over $O(L)$ charge sectors and stringent total-error tolerances can introduce additional scales, so the adjacent-sector ancilla is the clearer operational definition.
+
+A weak-measurement field theory describes replica-relative charge modes using compact fields. Smooth fluctuations favor a fuzzy phase; topological defects can destroy it. The analogy to vortex unbinding motivates a modified Berezinskii--Kosterlitz--Thouless transition, with a correlation length of essential-singularity form,
+
+$$
+\xi\sim\exp\!\left(\frac{b}{\sqrt{|p-p_\#|}}\right),
+$$ {#eq-sm-charge-bkt}
+
+on the appropriate side. The charge-fuzzy phase can have continuously varying exponents, making an ordinary single-power-law collapse misleading. The continuum derivation is controlled in a particular continuous-time weak-measurement setting and is supported numerically in projective-circuit settings [@barratt2022charge]. It is not a proof of one universal phase diagram for every non-Abelian group or every charge-conserving gate set. Physical symmetry, measurement choice, and finite-size crossovers remain consequential.
+
+## Topological order and a small quantum memory {#sec-sm-topological}
+
+Topological order is long-range entanglement that does not require a protecting on-site symmetry. The toric code supplies a concrete measurement-only construction in two dimensions. Put qubits on the edges of a square lattice with periodic boundaries. For each vertex $v$ and plaquette $f$, define
+
+$$
+A_v=\prod_{e\ni v}X_e,
+\qquad
+B_f=\prod_{e\in\partial f}Z_e.
+$$ {#eq-sm-toric-stabilizers}
+
+Each star and neighboring plaquette overlap on zero or two edges, so all these operators commute. Their joint eigenspaces are stabilizer-code spaces. Random measurement outcomes give different syndrome sectors; applying suitable Pauli corrections relates them to the usual code sector without changing their essential entanglement structure.
+
+On a torus there are $N_e$ physical qubits and $N_v+N_f-2$ independent stabilizers, because $\prod_vA_v=\prod_fB_f=I$. Euler's identity $N_v-N_e+N_f=0$ implies
+
+$$
+k=N_e-(N_v+N_f-2)=2.
+$$ {#eq-sm-toric-logical-count}
+
+Thus measuring all local stabilizers of a maximally mixed input leaves a rank-four state with entropy $2\ln2$. Noncontractible loop operators act on its two logical qubits. Local stabilizer measurements do not reveal these loop values. A pure initial state can instead yield a pure topologically ordered trajectory with its own definite or coherent logical state.
+
+This example has an area law for spatial entanglement, together with a topological constant. For a simply connected region in the standard toric-code ground state,
+
+$$
+S_A=\alpha|\partial A|-\gamma+\cdots,
+\qquad \gamma=\ln2.
+$$ {#eq-sm-topological-entropy}
+
+Combinations of entropies cancel the boundary term and extract $\gamma$ [@kitaev2006topological; @levin2006topological]. A geometry or subtraction involving two boundary components can give $2\ln2$. The residual torus **logical entropy** $2\ln2$ in the preceding paragraph is a separate quantity. Confusing the two makes apparent factors of two look like contradictions.
+
+Competing toric-code stabilizer measurements with weak single-site Pauli measurements can produce a monitored topologically ordered phase [@lavasani2021topological]. The extensive initial entropy is removed rapidly, leaving only a finite number of encoded qubits, which survive for a time exponential in the linear system size in the stable regime. At larger competing measurement rates, even this logical memory is destroyed. The volume-law phase of a generic hybrid circuit has a nonzero *density* of surviving information, whereas this topological phase protects order-one information. Purification can distinguish those two mechanisms as well as distinguish either from a trivial rapidly purifying state.
+
+Strictly speaking, sampling every local stabilizer at least once in a random sequential protocol requires a coverage time that grows logarithmically with the number of stabilizers. Parallel complete layers avoid this coverage issue. “Rapid local purification” should not be interpreted as a claim that an arbitrarily scheduled finite lattice has completed every check after one fixed number of random updates.
+
+## Gaussian fermions: simpler states, different universality {#sec-sm-fermions}
+
+Let $c_i,c_i^\dagger$ obey $\{c_i,c_j^\dagger\}=\delta_{ij}$ and $\{c_i,c_j\}=0$. A number-conserving quadratic Hamiltonian,
+
+$$
+H=\sum_{i,j}h_{ij}c_i^\dagger c_j,
+$$
+
+evolves a Gaussian state into another Gaussian state. Gaussianity means that higher correlation functions obey Wick's rule; it does **not** mean that higher correlation functions vanish. A number-conserving Gaussian state is specified by its one-body correlation matrix $C_{ij}=\langle c_i^\dagger c_j\rangle$. Pairing requires an enlarged Majorana covariance matrix, but the storage still scales quadratically with system size.
+
+Measurements of local occupation $n_i=c_i^\dagger c_i$, or of appropriate fermion bilinears, can preserve Gaussianity in each trajectory. The normalized state update remains nonlinear. For example, measuring $n_a=1$ has probability $C_{aa}$. Wick's rule gives, for $i,j\ne a$,
+
+$$
+\langle c_i^\dagger c_j n_a\rangle
+=C_{ij}C_{aa}-C_{ia}C_{aj},
+$$
+
+and therefore
+
+$$
+C'_{ij}=C_{ij}-\frac{C_{ia}C_{aj}}{C_{aa}}
+\quad (n_a=1).
+$$ {#eq-sm-gaussian-occupied}
+
+For the empty outcome, $p_0=1-C_{aa}$ and
+
+$$
+C'_{ij}=C_{ij}+\frac{C_{ia}C_{aj}}{1-C_{aa}}
+\quad (n_a=0).
+$$ {#eq-sm-gaussian-empty}
+
+The measured row and column have zero off-diagonal entries, and $C'_{aa}$ equals the observed occupation. Cases with zero probability are omitted. These low-rank updates make large simulations possible.
+
+For a Gaussian state restricted to a region $A$, diagonalize $C_A$. If its eigenvalues are $\lambda_\mu\in[0,1]$, then the reduced density matrix factorizes in the associated entanglement modes. Each mode is occupied with probability $\lambda_\mu$, giving
+
+$$
+S_A=-\sum_\mu\left[
+\lambda_\mu\ln\lambda_\mu+
+(1-\lambda_\mu)\ln(1-\lambda_\mu)\right].
+$$ {#eq-sm-gaussian-entropy}
+
+This formula turns a $2^{|A|}$-dimensional density-matrix problem into an $|A|$-dimensional eigenvalue problem.
+
+In the Born-sampled free-fermion monitoring classes considered in the review, persistent information-bearing bilinear measurements destroy the generic volume-law memory phase. Continuous local monitoring already destroys the unmonitored volume law in a simple hopping chain [@cao2019fermion]. General purification bounds for Gaussian dynamics with the stipulated monitoring show polynomial, rather than exponentially long, memory, with a quadratic-in-mode-number scale in the setting of @fidkowski2021memories. One must keep those monitoring assumptions: an unmeasured fermion sector is an obvious protected exception, and forced postselection defines a different ensemble.
+
+The replica intuition is that Gaussian dynamics has a continuous pairing structure, so a twist can relax gradually instead of requiring the finite-tension discrete domain wall of generic interacting dynamics. Losing a volume law does not require an area law. Critical and super-area-law regimes occur, including logarithmic scaling in models studied around the time of the review [@alberton2021fermion]. The distinction between Born-sampled monitoring, random nonunitary evolution, and selected no-click trajectories matters when comparing such results.
+
+::: {.callout-note title="A development beyond the review"}
+
+The detailed super-area-law scaling depends on the fermionic symmetry and measurement ensemble. A later controlled sigma-model treatment of a monitored Majorana chain finds a stable regime with $S\sim(\ln L)^2$ [@fava2023sigma]. Thus “free fermions do not sustain the generic monitored volume law” does not imply a single universal logarithmic phase. This example also illustrates why the symmetry class and the order of large-size limits should accompany numerical fits.
+:::
+
+## Spacetime duality turns gates into selected measurements {#sec-sm-spacetime}
+
+A two-site tensor has components $U^{o_1o_2}_{i_1i_2}$. In an ordinary circuit the lower indices are inputs and the upper indices outputs. The same tensor can instead be read sideways. For example, define
+
+$$
+\widetilde U^{\,i_2o_2}_{i_1o_1}=U^{o_1o_2}_{i_1i_2}.
+$$ {#eq-sm-reshuffle}
+
+This is a reshuffling of indices, rather than a unitary change of basis on an unchanged input-output split. The relation $U^\dagger U=I$ does not generally imply $\widetilde U^\dagger\widetilde U=I$. A tensor that is unitary in both orientations is specially constrained, as in a dual-unitary circuit.
+
+### Rotate the identity gate
+
+For the identity, $U^{o_1o_2}_{i_1i_2}=\delta_{o_1i_1}\delta_{o_2i_2}$. Define a maximally entangled pair
+
+$$
+|\Phi_q\rangle=\frac{1}{\sqrt q}\sum_{a=1}^{q}|a,a\rangle.
+$$
+
+Using @eq-sm-reshuffle, the reshuffled matrix is nonzero only when each of its input and output pairs has equal entries. Explicitly,
+
+$$
+\widetilde I=q|\Phi_q\rangle\langle\Phi_q|.
+$$ {#eq-sm-identity-dual}
+
+The normalization $q$ has no effect on the normalized conditional output. Reading the identity sideways has therefore turned a trivial gate into a projector onto one specified Bell state. In contrast, the SWAP gate remains unitary after reshuffling. These two checks show why the tensor's orientation carries physical content.
+
+For a general gate use the polar decomposition $\widetilde U=AW$, with $A\geq0$. Reshuffling preserves its Hilbert--Schmidt norm, so $\operatorname{tr}(A^2)=q^2$. Writing $F=A/q$ gives
+
+$$
+\widetilde U=qFW,
+\qquad F\geq0,\qquad \operatorname{tr}(F^2)=1.
+$$ {#eq-sm-polar}
+
+Every eigenvalue of $F^2$ is at most one, so $F$ can be a measurement Kraus operator, completed for example by $(I-F^2)^{1/2}$. The rotated tensor implements the specified outcome $F$ after the unitary $W$. It is therefore a **forced** or **postselected** nonunitary evolution, not automatically a trajectory drawn according to the Born rule of a generic hybrid circuit.
+
+This distinction is particularly important for free fermions: a forced spacetime-dual Gaussian circuit can sustain a volume law without contradicting the no-volume-law results for the Born-sampled monitored ensembles discussed above.
+
+Rotating an entire network exchanges spatial boundaries with initial and final boundaries. The dual state lives on what was a time-like edge of the original circuit. Boundary conditions and normalization must be carried through this exchange; changing only the axis labels does not define the physical dual experiment.
+
+### Why teleportation helps with the experimental overhead
+
+For a qudit $|\psi\rangle$ and an auxiliary maximally entangled pair, direct contraction gives
+
+$$
+(\langle\Phi_q|_{12}\otimes I_3)
+(|\psi\rangle_1\otimes|\Phi_q\rangle_{23})
+=\frac{1}{q}|\psi\rangle_3.
+$$ {#eq-sm-teleport}
+
+Postselecting the chosen Bell outcome transfers the state to a different wire, with probability $1/q^2$ for this elementary teleportation step. This tensor identity permits time-like inputs and outputs to be routed to ordinary spatial input and output registers using ancillas and SWAP operations.
+
+In spacetime-dual protocols, one prepares entangled pairs, executes an accessible unitary circuit on the enlarged system, and performs selected Bell measurements at the final boundary. The desired nonunitary output is obtained by retaining successful boundary outcomes. Generic trajectory postselection can require matching outcomes throughout an $L\times t$ spacetime volume, with exponentially small success probability in $Lt$. Moving the selected measurements to a boundary can reduce that exponent to the number of boundary outcomes. The overhead can still be exponential, and correlated Bell outcomes need not have independent probabilities. The benefit is a parametric reduction and the possibility of using devices with only final-time readout [@ippoliti2022duality]. Specialized observables and protocols can avoid explicit postselection in further cases [@ippoliti2021postselection].
+
+## Entanglement growth becomes spatial entanglement structure {#sec-sm-dual-scaling}
+
+Spacetime duality relates temporal entanglement growth in a unitary circuit to the dependence of entropy on subsystem length in its nonunitary partner. At leading order, ballistic unitary growth becomes a volume law, logarithmic growth suggests logarithmic spatial entanglement, and subballistic growth $t^\alpha$ with $0<\alpha<1$ gives a fractional-power spatial law $\ell^\alpha$. This provides a route to “fractal” entanglement scaling without the usual area/volume dichotomy [@ippoliti2022duality; @lu2021duality].
+
+The leading-order correspondence requires a boundary correction. Entropies of the rotated output correspond to unitary dynamics with decoherence at an edge: information can leave through that boundary. The correction can dominate when the original unitary growth is very slow. In particular, a unitary area law does not automatically imply an area law in the rotated state.
+
+A simple random-walk calculation shows how a boundary generates a logarithm. In an averaged domain-wall description, suppose a path diffuses on a half-line and is absorbed at its edge. The continuum propagator from $x>0$ to $y>0$ in time $t$ is the image solution
+
+$$
+K_+(x,y;t)=\frac{1}{\sqrt{4\pi Dt}}
+\left[
+e^{-(x-y)^2/(4Dt)}-e^{-(x+y)^2/(4Dt)}
+\right].
+$$ {#eq-sm-absorbing-walk}
+
+For fixed positive $x,y$ and large $t$, expand the exponentials. Their leading constants cancel, leaving
+
+$$
+K_+(x,y;t)\simeq
+\frac{xy}{Dt\sqrt{4\pi Dt}}\propto t^{-3/2}.
+$$
+
+If the remaining local path weights contribute $e^{-ft}$, the corresponding dimensionless free energy is
+
+$$
+-\ln Z=ft+\frac32\ln t+O(1).
+$$ {#eq-sm-boundary-log}
+
+Partially absorbing microscopic boundaries can flow to the same long-time behavior under suitable conditions. This elementary example explains the origin of the $3/2$ logarithm in the domain-wall calculation: the allowed paths are constrained by a boundary, so their return weight has an extra suppression.
+
+The calculation is for the specified averaged walk observable; it should not be used to assign exactly $3/2$ to every quenched von Neumann entropy in every circuit. Quenched disorder also produces the $t^{1/3}$ free-energy scale of the directed polymer. After dualizing, these effects give logarithmic boundary contributions and $\ell^{1/3}$ scales in the volume-law regime. The duality consequently supplies a microscopic route to the nonthermal structure that makes the monitored volume-law phase robust against local measurements.
+
+## Worked problems and exercises {#sec-sm-exercises}
+
+### 1. A parity measurement is not two local measurements
+
+Calculate the entropy of qubit 1 after measuring $Z_1Z_2$ on $|++\rangle$. Compare it with measuring $Z_1$ and $Z_2$ separately and keeping both outcomes.
+
+::: {.callout-note collapse="true" title="Solution"}
+
+The joint parity measurement gives either Bell state in @eq-sm-parity-bell, so $S_1=\ln2$ for either result. Separate measurements give one of the four computational-basis product states, so $S_1=0$. Learning only parity preserves a two-dimensional coherent subspace; learning the two values resolves it completely.
+:::
+
+### 2. Cat order with random signs
+
+For the cat state in @eq-sm-ising-cat, derive $\langle Z_iZ_j\rangle$ and the interval entropy. Explain how the squared correlation remains nonzero when the ordinary averaged correlation vanishes.
+
+::: {.callout-note collapse="true" title="Solution"}
+
+Both branches have $Z_iZ_j=z_i z_j$, so their superposition has that expectation. A nonempty proper interval sees two orthogonal branch restrictions with weights $1/2$, giving entropy $\ln2$. Changing the record changes $z_i z_j$ between $+1$ and $-1$, whereas its square is always one.
+:::
+
+### 3. Sharpening without changing charge
+
+An ancilla labels two sectors with equal initial weights. A particular record has likelihoods $P(\boldsymbol m|Q)=0.9$ and $P(\boldsymbol m|Q-1)=0.1$. Find the posterior ancilla state and its entropy. Has the dynamics transferred a particle between sectors?
+
+::: {.callout-note collapse="true" title="Solution"}
+
+The reduced ancilla state is $\operatorname{diag}(0.9,0.1)$, with entropy $-0.9\ln0.9-0.1\ln0.1\simeq0.3251$ nats, below its initial $\ln2$. There was no transfer between sectors. The record changed their relative probabilities by selecting information about an initially uncertain conserved quantity.
+:::
+
+### 4. Count toric-code logical qubits
+
+On an $\ell\times\ell$ square torus, count edges, vertices, plaquettes, independent stabilizers, and the entropy left after measuring all local stabilizers of $I/2^{N_e}$.
+
+::: {.callout-note collapse="true" title="Solution"}
+
+$N_e=2\ell^2$ and $N_v=N_f=\ell^2$. Two global relations leave $2\ell^2-2$ independent stabilizers. The remaining code has $k=2$ logical qubits, rank four, and entropy $2\ln2$. This is logical uncertainty, rather than the disk topological constant $\gamma=\ln2$.
+:::
+
+### 5. Check the Gaussian update on one fermion
+
+Take $|\psi\rangle=(c_1^\dagger+c_2^\dagger)|\mathrm{vac}\rangle/\sqrt2$. Find its $2\times2$ correlation matrix. Apply the occupied and empty updates for measuring $n_1$ and verify that both conditional outputs are unentangled occupation states.
+
+::: {.callout-note collapse="true" title="Solution"}
+
+$C$ has all entries equal to $1/2$. The occupied outcome gives $C'_{22}=1/2-(1/2)^2/(1/2)=0$ and $C'_{11}=1$, hence $|10\rangle$. The empty outcome gives $C'_{22}=1/2+(1/2)^2/(1/2)=1$ and $C'_{11}=0$, hence $|01\rangle$. Each occurs with probability $1/2$. Before measuring, the one-site entropy was $\ln2$; after conditioning it is zero.
+:::
+
+### 6. Derive the rotated identity
+
+Using the index convention in @eq-sm-reshuffle, show that the identity gate has rank one after rotation, while the SWAP gate remains full rank. Why does this distinguish a generic spacetime-dual circuit from a dual-unitary circuit?
+
+::: {.callout-note collapse="true" title="Solution"}
+
+The rotated identity has elements $\delta_{o_1i_1}\delta_{o_2i_2}$, an outer product of the equal-index vectors, so it equals $q|\Phi_q\rangle\langle\Phi_q|$. For SWAP, the elements are $\delta_{o_1i_2}\delta_{o_2i_1}$, giving a permutation matrix between sideways inputs and outputs. Dual unitarity requires sideways unitarity as an additional tensor constraint; ordinary unitarity alone supplies no such guarantee.
+:::

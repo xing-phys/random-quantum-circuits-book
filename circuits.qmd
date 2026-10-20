@@ -1,0 +1,287 @@
+# Local circuits and quantum trajectories {#sec-circuits}
+
+A circuit specifies a sequence of elementary operations. Its geometry makes locality visible, while probability distributions on its gates make ensemble calculations tractable. Neither the circuit geometry nor the gate distribution removes quantum coherence from an individual realization. This chapter defines the models used throughout the book and explains which physical questions they address. It develops Sections 2.3–2.5 of the review [@fisher2023].
+
+## Fixing the clock and the geometry
+
+Consider a chain of $L$ qudits, each of dimension $q$. Label sites by integers $x=1,\ldots,L$ and label the bond between $x$ and $x+1$ by $x$. A two-site gate $u_{t,x}$ is a unitary matrix in $U(q^2)$. It acts trivially on all other sites.
+
+In an open chain define alternating layers by
+
+$$
+U_t=\prod_{x\in\mathcal B_t}u_{t,x},
+\qquad
+\mathcal B_t=
+\begin{cases}
+\{1,3,5,\ldots\}\cap\{1,\ldots,L-1\},&t\text{ odd},\\
+\{2,4,6,\ldots\}\cap\{1,\ldots,L-1\},&t\text{ even}.
+\end{cases}
+$$ {#eq-circ-layers}
+
+Gates in one layer act on disjoint pairs and commute. The product is therefore equivalent to a tensor product over the paired sites, with identity operators on unpaired boundary sites. The full evolution is
+
+$$
+U(t;0)=U_tU_{t-1}\cdots U_1,
+\qquad
+\ket{\psi(t)}=U(t;0)\ket{\psi(0)}.
+$$ {#eq-circ-total-unitary}
+
+**One unit of time throughout this book is one layer of disjoint two-site gates.** An odd layer followed by an even layer takes two time units. Some papers call this pair one time step. Their quoted velocities must be divided by two when converted to our convention if their unit of distance is unchanged.
+
+A small example displays why this is called a *brickwork* circuit:
+
+```text
+time ↑       sites: 1   2   3   4   5   6
+layer 4               [---]   [---]
+layer 3           [---]   [---]   [---]
+layer 2               [---]   [---]
+layer 1           [---]   [---]   [---]
+```
+
+Each horizontal bracket joins adjacent sites. The vertical wires, not drawn here, carry the qudits between layers. Time runs upward; formulas apply the earliest layer on the right.
+
+Periodic boundary conditions can be imposed for even $L$ by including the bond from site $L$ to site one in the appropriate layer. For an odd periodic chain, two alternating perfect matchings are not available; one must specify a modified scheduling convention. Most bulk statements are independent of this boundary issue when the relevant light cones do not reach a boundary.
+
+The definition extends to a lattice in any spatial dimension by scheduling gates on disjoint local bonds, or to a general interaction graph by choosing disjoint graph edges. Spatial dimension changes the geometry of information fronts and entanglement surfaces. We use one dimension as the simplest setting in which the central mechanisms can be derived explicitly.
+
+## From Hamiltonians to circuits
+
+Circuits connect to familiar Hamiltonian dynamics through the product formula. Suppose
+
+$$
+H=H_{\mathrm{odd}}+H_{\mathrm{even}},\qquad
+H_{\mathrm{odd}}=\sum_{x\,\mathrm{odd}}h_{x,x+1},
+$$
+
+and similarly for $H_{\mathrm{even}}$. Terms within each sum commute because they have disjoint support. Over a short physical interval $\delta t$,
+
+$$
+e^{-iH\delta t}
+=e^{-iH_{\mathrm{even}}\delta t}
+ e^{-iH_{\mathrm{odd}}\delta t}
++O(\delta t^2).
+$$ {#eq-circ-trotter}
+
+This error statement is for a fixed finite system with bounded terms; its norm bound involves commutators and can grow with system size. Each exponential on the right is a layer of two-site gates. Repeated layers approximate the continuous evolution as $\delta t\to0$, with an accumulated error that must be controlled for the time interval under study.
+
+A Haar-random circuit is a different model: its gates are generally far from the identity and there is no small $\delta t$. It need not conserve the energy of any fixed local Hamiltonian. The useful connection is that both models have local interactions, unitary evolution, and often chaotic information dynamics. Universality claims compare the long-distance organization of those dynamics, while model-dependent rates and microscopic transients can differ.
+
+With independently refreshed gates there is also no fixed one-period evolution operator whose eigenvectors define stationary modes. There is no natural ground state or low-energy quasiparticle expansion. These circuits are suited to information dynamics far from a low-temperature quasiparticle regime. A repeated Floquet circuit restores a fixed period operator, while still lacking an ordinary conserved energy in general.
+
+## What Haar randomness means
+
+The Haar distribution is the uniform probability measure on a compact unitary group. If $u$ is Haar distributed in $U(D)$, then $vuw$ has the same distribution for any fixed $v,w\in U(D)$. For a two-qudit gate, $D=q^2$.
+
+The minimal random circuit draws every $u_{t,x}$ independently from Haar measure. Independence in both space and time is a powerful assumption. For example, it lets a product of local replicated gates be averaged gate by gate. Reusing the same random gate at later times creates correlations and changes that calculation.
+
+The Haar property makes no preferred basis special, but does not make all gates equally entangling on all inputs. It is a probability distribution over exact unitary operations. A realization consists of definite matrices, and its state remains pure under unitary dynamics.
+
+### Sampling a Haar gate correctly
+
+One useful numerical construction begins with a $D\times D$ complex Gaussian matrix $Z$, with independent real and imaginary parts of equal variance. Compute a QR factorization $Z=QR$. A numerical QR routine may make an arbitrary phase choice for the diagonal entries of $R$. Correct it using
+
+$$
+\Lambda_{jj}=\frac{R_{jj}}{|R_{jj}|},
+\qquad u=Q\Lambda.
+$$ {#eq-circ-haar-qr}
+
+The event $R_{jj}=0$ has probability zero in exact arithmetic. With the phase correction, $u$ is Haar distributed. Gaussian invariance under left unitary multiplication and the positive-diagonal convention for the corrected $R$ explain the construction [@fnd-mezzadri2007]. In a numerical implementation, record the random seed and the linear-algebra convention; also check $u^\dagger u\simeq I$ to machine precision.
+
+Sampling independent random angles in a familiar Euler-angle parameterization generally does *not* produce Haar measure. The invariant measure has a nontrivial Jacobian. Likewise, exponentiating a Gaussian Hermitian matrix produces a unitary ensemble but generally not the Haar ensemble.
+
+## Exact causal cones
+
+For definiteness, the conventional Heisenberg operator is
+
+$$
+O(t)=U(t;0)^\dagger O\,U(t;0).
+$$ {#eq-circ-heisenberg}
+
+Some circuit calculations use $UOU^\dagger$ instead. Both conventions have the same locality bounds; care is needed only with time ordering and the interpretation of correlations.
+
+If a gate does not intersect the support of an operator, it commutes with that operator and cancels against its adjoint. A gate that does intersect the support can enlarge it only to the other site of that gate. Iterating this observation shows that an initially single-site operator is supported inside a cone whose radius grows by at most one lattice site per layer:
+
+$$
+\operatorname{supp}O_x(t)\subseteq[x-t,x+t].
+$$ {#eq-circ-lightcone}
+
+There are parity-dependent offsets on the microscopic brickwork lattice. The maximal asymptotic causal speed is $v_{\mathrm{LC}}=1$ in our units. If the supports of $O_x(t)$ and $V_y$ do not overlap, then
+
+$$
+[O_x(t),V_y]=0\qquad\text{for }|x-y|>t
+$$ {#eq-circ-commutator-bound}
+
+exactly. This strict circuit light cone is stronger than the exponentially small tails of a generic continuous-time Lieb–Robinson bound.
+
+The geometric light-cone speed is not the same as a measured information velocity. Operator weight typically travels at a butterfly velocity $v_B\leq1$. Entanglement growth has its own rate, often expressed through an entanglement velocity $v_E$. Those velocities characterize different observables and need not agree.
+
+For a product initial state, two final observables whose backward cones do not intersect have factorized expectations. To see this, evolve both observables backward. Their supports are disjoint at the initial time, and the initial product state factorizes over those supports. Correlations cannot be created between them until the cones meet. If the initial state already has long-range correlations, locality constrains the propagation of new influence but does not remove pre-existing correlations.
+
+## Thermalization without an energy density
+
+A generic fresh-Haar circuit conserves neither particle number nor the energy of a fixed Hamiltonian. Its local equilibrium state is therefore the infinite-temperature state
+
+$$
+\rho_A^{\mathrm{eq}}=\frac{I_A}{q^{|A|}},
+\qquad s_{\mathrm{eq}}=\ln q.
+$$ {#eq-circ-equilibrium}
+
+For a globally pure evolving state, the mixedness of this local state is supplied by entanglement with the complement. The entire system has zero von Neumann entropy at every time. Thus local equilibration is compatible with globally reversible unitary evolution.
+
+There is a useful exact statement about the ensemble average. For a pair of sites $ab$ coupled to an arbitrary rest $R$,
+
+$$
+\mathbb E_u\bigl[(u_{ab}\otimes I_R)\rho
+(u_{ab}^\dagger\otimes I_R)\bigr]
+=\frac{I_{ab}}{q^2}\otimes\tr_{ab}\rho.
+$$ {#eq-circ-one-copy-twirl}
+
+Unitary invariance forces the output on $ab$ to be proportional to the identity; tracing $ab$ fixes the coefficient. If one layer covers all sites in disjoint pairs, averaging its gates sends the *average global density matrix* to $I/q^L$, even when each realization remains pure. This observation does not prove that a small subsystem of a typical realization equilibrates in one layer. For example, two neighboring qudits acted on by one gate remain jointly pure if they began isolated from the others.
+
+The distinction is fundamental: $S(\mathbb E\rho_A)$ need not equal $\mathbb E S(\rho_A)$. Ensemble averaging hides information about which unitary was applied and can create classical mixing absent in any individual run. Nonlinear observables, including entropies and fluctuations, are needed to distinguish these cases.
+
+For a fixed small subsystem in a large chaotic system, local equilibration is the appropriate late-time expectation. It is not an assertion that every subregion is exactly maximally mixed at finite time, or that every initial condition in every structured circuit thermalizes. Symmetries, integrability, localization, and other constraints can change the result.
+
+## Adding measurements
+
+We now specify a monitored circuit. After each unitary layer, independently at each site, choose to perform a rank-one measurement in the computational basis with probability $p$. The outcomes are $m\in\{0,\ldots,q-1\}$ and the projectors are $P_{x,m}=\ket m_x\bra m\otimes I_{\mathrm{rest}}$.
+
+This choice supplies three distinct kinds of randomness:
+
+1. The gates drawn when the circuit is designed.
+2. The measurement locations selected with probability $p$.
+3. The measurement outcomes generated according to the Born rule.
+
+![A brickwork circuit on an open chain. Teal rectangles are two-site unitary gates and red marks are single-site measurements inserted after selected layers. Each row of disjoint unitary gates advances time by one unit. Original diagram for this book.](figs/brickwork){#fig-circ-brickwork width=95% fig-alt="Eight vertical qudit wires joined in alternating rows by teal two-site gates, with red local measurement marks between rows; time increases upward."}
+
+One can fix the first two in advance and repeat the experiment many times. The third remains random. Conversely, one can average over any or all three, provided the observable and probability measure are stated.
+
+The placement convention also matters. Here $p$ is a probability per site *per layer*, and measurements occur after that layer. A numerical critical probability quoted for a different schedule is not automatically the same parameter. At $p=0$ the dynamics is purely unitary. At $p=1$, every site is measured after every layer, and the state at those observation times is a product of computational-basis states in each pure trajectory.
+
+### A record defines a trajectory
+
+Fix the gate sequence and all measurement locations. Let $\mathbf m$ denote the complete record of outcomes. If the measurements after layer $\tau$ have combined projector $P_{\mathbf m_\tau}$, define
+
+$$
+K_{\mathbf m}=P_{\mathbf m_t}U_t\cdots
+P_{\mathbf m_1}U_1.
+$$ {#eq-circ-record-kraus}
+
+An empty set of measurements means $P_{\mathbf m_\tau}=I$. The combined projector is a product of commuting on-site projectors. For an initial density matrix $\rho_0$, the unnormalized conditional state, probability, and normalized state are
+
+$$
+\widetilde\rho_{\mathbf m}
+=K_{\mathbf m}\rho_0K_{\mathbf m}^\dagger,
+\qquad
+p_{\mathbf m}=\tr\widetilde\rho_{\mathbf m},
+\qquad
+\rho_{\mathbf m}=\frac{\widetilde\rho_{\mathbf m}}{p_{\mathbf m}}.
+$$ {#eq-circ-trajectory-density}
+
+Records of zero probability can be omitted. For a pure initial state,
+
+$$
+\ket{\psi_{\mathbf m}(t)}
+=\frac{K_{\mathbf m}\ket{\psi(0)}}{\sqrt{p_{\mathbf m}}},
+\qquad
+p_{\mathbf m}=\|K_{\mathbf m}\ket{\psi(0)}\|^2.
+$$ {#eq-circ-pure-trajectory}
+
+These formulas already include all successive normalizations. To verify them, let $p(m_1)$ be the first outcome probability and $p(m_2\mid m_1)$ the next conditional probability. The normalization factor introduced after the first measurement cancels from the numerator and denominator in the second Born probability. Multiplying the conditional probabilities telescopes to the squared norm of the complete unnormalized branch. Repeating this gives @eq-circ-pure-trajectory.
+
+Likewise, summing over the final measurement outcomes gives $\sum_mP_m=I$ and $\sum_mP_m^\dagger P_m=I$. Applying this identity backward through the circuit proves
+
+$$
+\sum_{\mathbf m}K_{\mathbf m}^\dagger K_{\mathbf m}=I,
+\qquad \sum_{\mathbf m}p_{\mathbf m}=1.
+$$ {#eq-circ-completeness}
+
+The normalized update depends on the incoming state through $p_{\mathbf m}$. Conditional dynamics is therefore nonlinear in the density matrix, even though each unnormalized branch is linear.
+
+## Keeping or discarding the record
+
+An observer who knows a complete measurement record and the initial pure state can assign a pure conditional state. An observer who discards the record assigns
+
+$$
+\rho_{\mathrm{uncond}}(t)
+=\sum_{\mathbf m}\widetilde\rho_{\mathbf m}
+=\sum_{\mathbf m}p_{\mathbf m}\rho_{\mathbf m}.
+$$ {#eq-circ-unconditional}
+
+This is a linear, completely positive, trace-preserving quantum channel. Both descriptions concern the same experiment with different accessible information. An incomplete record generally gives a mixed conditional state. A mixed initial state also need not become pure merely because subsequent outcomes are recorded.
+
+The two-qubit example in @sec-foundations is the simplest warning against confusing these descriptions. Measuring one half of a Bell pair gives product states in each trajectory, but their outcome average has positive entropy and classical mutual information. Averaging the state and then computing an entropy does not recover the average trajectory entanglement.
+
+For a trajectory observable $F(\rho_{\mathbf m})$, the physical record average at fixed gates and measurement locations is
+
+$$
+\langle F\rangle_{\mathrm{records}}
+=\sum_{\mathbf m}p_{\mathbf m}F(\rho_{\mathbf m}).
+$$ {#eq-circ-record-average}
+
+Giving all allowed records equal weight defines a different ensemble. It describes a particular postselection protocol, not the ordinary repeated experiment, unless all records happen to have equal Born probabilities.
+
+The distinction becomes especially clear for purity:
+
+$$
+\sum_{\mathbf m}p_{\mathbf m}\tr\rho_{A,\mathbf m}^{\,2}
+=\sum_{\mathbf m}
+\frac{\tr\widetilde\rho_{A,\mathbf m}^{\,2}}{p_{\mathbf m}}.
+$$ {#eq-circ-weighted-purity}
+
+Here $\widetilde\rho_{A,\mathbf m}=\tr_{\bar A}\widetilde\rho_{\mathbf m}$. The denominator is one reason replica calculations for monitored dynamics require more care than unitary purity calculations.
+
+### Why measurement is dynamical
+
+Repeated measurements change the subsequent state and therefore change all later Born probabilities. They do not passively sample a trajectory that would have occurred without them. For a single qubit, unitary rotations move the Bloch vector continuously around the sphere, while measurements create stochastic jumps to their eigenstates. Many-body trajectories explore a much larger space whose points have inequivalent entanglement structures.
+
+A local rank-one measurement always disentangles the measured site in a pure trajectory. Nevertheless, a finite density of measurements need not destroy a volume-law amount of entanglement: information can be encoded nonlocally and protected from individual local observations. The competition between encoding by the unitaries and information extraction by monitoring produces the collective transition studied later in the book.
+
+The relevant order parameter can therefore be invisible in the unconditional state. A transition in the scaling of $\sum_{\mathbf m}p_{\mathbf m}S_A(\rho_{\mathbf m})$ need not appear in the simple averaged density matrix. Experimental access to that transition consequently requires attention to records and nonlinear diagnostics.
+
+## What random circuits can explain
+
+The minimal circuit has deliberately little microscopic structure, but locality and unitarity already impose nontrivial collective organization. It is useful for studying entanglement growth, operator spreading, scrambling, and the emergence of local equilibrium. Randomness often allows exact ensemble averages that identify a mechanism or a scaling law; those calculations can then guide the study of less random dynamics.
+
+Additional structure changes the questions that are accessible:
+
+| Modification | Physical question introduced |
+|:--|:--|
+| Gates preserving a charge | How does transport coexist with scrambling? |
+| Repeating the same circuit period | How does Floquet spectral chaos emerge? |
+| Gates unitary under a space-time reshuffling | Which correlation and entropy formulas become exact? |
+| Restricting gates to the Clifford group | Which highly entangled dynamics remain classically simulable? |
+| Measurements and a retained record | Which phases occur in conditional quantum states? |
+| All-to-all pairings or a general graph | How does information spread without a one-dimensional metric? |
+
+These choices should be regarded as different models with specified assumptions. In an all-to-all circuit, for instance, the one-dimensional velocity bound no longer applies because graph distance and parallel gate scheduling replace spatial distance. In a Floquet circuit, reusing gates invalidates the simple independent-time Haar average. A charge-conserving circuit cannot in general relax to the full maximally mixed state if its initial charge is constrained.
+
+Random circuits also provide benchmarks and sampling tasks for quantum devices. A circuit can be easy to generate experimentally while its full output distribution is hard to represent classically. Entanglement growth explains why a particular MPS algorithm becomes expensive, but establishing a sampling-complexity separation needs additional computational assumptions and error criteria. The physical and complexity questions are related without being identical.
+
+The most useful universality statements name both the common structure and the observable. Ballistic spreading can survive replacing random gates by a deterministic chaotic drive. A particular diffusion constant or a particular purity growth rate usually does not. An exact average over an ensemble is also not automatically a theorem about every realization. The next chapter develops the mathematical bridge from such averages to classical processes.
+
+## Exercises with answers and hints
+
+1. **Time units.** A paper defines one time step as two alternating layers and reports a front velocity of $1.2$ sites per time step. What is the velocity in this book's convention?
+
+   *Answer:* $0.6$ sites per layer. The geometric maximum is two sites per two-layer period, or one site per layer.
+
+2. **A strict light cone.** Show directly that a gate acting on sites $4,5$ cancels from $U^\dagger X_1 U$ if all other gates in that layer are disjoint from those sites. Explain why cancellation alone is insufficient after an earlier backward-evolved operator has spread onto site four.
+
+   *Hint:* Commute the disjoint gate through the operator, then use $u^\dagger u=I$. Cancellation depends on the operator's support at that stage of backward evolution.
+
+3. **Two sequential observations.** Start from $\ket0$, apply $H$, measure $Z$ with result $m_1$, apply $H$ again, and measure $Z$ with result $m_2$. Compute the probability of each record using both conditional probabilities and the norm of $P_{m_2}HP_{m_1}H\ket0$.
+
+   *Answer:* Every record has probability $1/4$, and the two methods agree. Replacing the second $H$ by the identity leaves only $00$ and $11$, each of probability $1/2$. Records are not generally independent.
+
+4. **The ensemble state can be misleading.** Choose $\ket0$ and $\ket1$ with equal probabilities. Compare the average pure-state entropy with the entropy of the average density matrix. Repeat for the two product trajectories obtained by measuring a Bell pair.
+
+   *Answer:* In the single-qubit example the answers are zero and $\ln2$. For the two-qubit trajectories the global conditional entropies are zero, while the averaged global state has entropy $\ln2$. In both cases averaging hides the preparation or outcome label.
+
+5. **Unobserved measurement.** Prove that discarding a single $Z$ measurement outcome gives $\mathcal D_Z(\rho)=(\rho+Z\rho Z)/2$. Which Pauli components survive? Does this operation always produce a pure state?
+
+   *Answer:* Expanding $P_0\rho P_0+P_1\rho P_1$ gives the formula. Only the $I$ and $Z$ components survive. A generic input becomes mixed; only a $Z$ eigenstate remains pure.
+
+6. **Monitoring schedule.** At $p=1$, is the state necessarily unentangled just *before* the measurements after a layer?
+
+   *Answer:* No. A layer acting on the preceding product state can create entangled pairs. Rank-one measurements make the state product immediately afterward. Statements about entanglement in a discrete monitored circuit must specify the observation time within each layer.

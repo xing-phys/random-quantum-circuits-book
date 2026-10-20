@@ -1,0 +1,152 @@
+# A reproducible Julia laboratory {#sec-laboratory}
+
+The theoretical chapters describe systems in limits inaccessible to a laptop. A small exact calculation is nevertheless a powerful way to learn the definitions, detect convention errors, and understand what an ensemble average means. Here we simulate an open chain of eight qubits, starting from $\ket{0}^{\otimes L}$, with independent Haar-random nearest-neighbor gates and projective $Z$ measurements after each layer. The full wavefunction is retained; there is no tensor-network truncation.
+
+The entire simulator is available as [scripts/circuits.jl](scripts/circuits.jl). It uses only Julia standard libraries. The data shown below are included as [data/entanglement.csv](data/entanglement.csv), and [scripts/make_figures.py](scripts/make_figures.py) renders the figures. The simulation was run with Julia 1.12.6; the plotting environment uses Matplotlib 3.11.2. Ordinary book builds use the committed data and figures and do not rerun the simulation.
+
+## Encoding the state
+
+Label computational-basis states by the integer
+
+$$
+k=\sum_{j=1}^{L} b_j2^{j-1},\qquad b_j\in\{0,1\}.
+$$ {#eq-lab-index}
+
+The amplitude of this state is stored in `psi[k+1]`. Site 1 is the least significant bit. Julia's column-major layout then makes the reshape
+
+```julia
+M = reshape(psi, 2^ell, :)
+```
+
+the coefficient matrix for sites $1,\ldots,\ell$ versus the remaining sites. If $\sigma_a$ are its singular values, the Schmidt weights are $\lambda_a=\sigma_a^2$. We calculate
+
+$$
+S_1=-\sum_a\lambda_a\ln\lambda_a,
+\qquad S_2=-\ln\sum_a\lambda_a^2.
+$$ {#eq-lab-entropies}
+
+No reduced density matrix needs to be assembled. The small renormalization `weights ./= sum(weights)` removes floating-point drift; it does not justify ignoring norm errors elsewhere. The simulator checks the wavefunction norm at every time step.
+
+For a gate on sites $j,j+1$, fix all other bits and gather the four amplitudes in local order $00,10,01,11$, multiply by a $4\times4$ matrix, and scatter them back. This costs $O(2^L)$ per gate. An explicit dense matrix for the full chain would instead store $4^L$ complex entries and is unnecessary. Basis order is part of the algorithm: a familiar printed CNOT matrix can be wrong if imported with a different bit convention.
+
+## Drawing a Haar gate correctly
+
+Generate a complex Gaussian matrix $Z$ whose entries have independent real and imaginary parts of variance $1/2$. Its distribution is invariant under multiplication by a fixed unitary. Write $Z=QR$ by QR decomposition. A numerical QR routine makes a particular choice of diagonal phases; remove that convention by setting
+
+$$
+U=Q\,\operatorname{diag}\left(\frac{R_{11}}{|R_{11}|},\ldots,
+\frac{R_{dd}}{|R_{dd}|}\right),\qquad d=4.
+$$ {#eq-lab-haar-qr}
+
+Zero diagonal entries have probability zero in exact arithmetic and receive phase one in the implementation. This construction produces Haar $U(d)$ [@fnd-mezzadri2007]. The factor $1/\sqrt2$ does not change $Q$, but makes the entry variance convention explicit.
+
+The full distribution of $U$ matters. Randomizing each matrix entry independently without the QR step does not yield a unitary. Exponentiating an arbitrary Gaussian Hermitian matrix gives a unitary but does not in general give Haar measure at a fixed evolution time. These are different circuit ensembles.
+
+## Sampling a trajectory
+
+At each layer, apply gates on bonds $(1,2),(3,4),\ldots$ for odd layers and $(2,3),(4,5),\ldots$ for even layers. Draw fresh, independent gates whenever a bond is used. For each site independently, perform a measurement with probability $p$. Thus there are two distinct Bernoulli choices: whether a measurement happens, and which Born-distributed outcome occurs if it happens.
+
+For an attempted measurement of site $j$, calculate
+
+$$
+p_0=\sum_{k:b_j(k)=0}|\psi_k|^2.
+$$
+
+Choose outcome zero with probability $p_0$, otherwise outcome one. Set amplitudes incompatible with the outcome to zero and divide the others by $\sqrt{p_m}$. Sequential single-site $Z$ measurements commute, and conditional probabilities correctly reproduce their joint distribution. One must recompute the probabilities after each collapse because entangled sites have correlated outcomes.
+
+We record the entropy **after all the measurements in that layer**. This timing makes $p=1$ a particularly useful check: the complete state is then a computational-basis product state at every recorded time, even though the gates can create entanglement earlier in the layer.
+
+The core evolution is short:
+
+```julia
+for t in 1:T
+    firstsite = isodd(t) ? 1 : 2
+    for j in firstsite:2:L-1
+        gate!(psi, haar(rng), j)
+    end
+    for j in 1:L
+        rand(rng) < p && measure!(rng, psi, j)
+    end
+    values[t+1, :] .= entropies(psi, L ÷ 2)
+end
+```
+
+Each trajectory samples both circuit disorder and measurement outcomes. The default data set contains 128 independent trajectories at each of $p=0,0.15,0.6,1$, with $L=8$ and $T=32$ layers. A separate seeded `MersenneTwister` stream is used for each $p$, with seeds 20261021 through 20261024. These parameters and seeds are stored in every CSV row. Exact byte-for-byte reproducibility is expected within the recorded Julia/RNG environment; changes in language libraries or floating-point implementations can change the sampled numbers.
+
+## Results and error bars
+
+![Exact state-vector data for eight qubits. Left: half-chain von Neumann entropy, averaged over 128 trajectories per measurement rate; shading denotes two standard errors of the mean. Right: three different entropy averages at zero measurement rate. Time is measured in single layers. All quantities are sampled after measurement. The dashed horizontal line is the maximal four-qubit entropy. Original calculation and figure for this book.](figs/entanglement-lab){#fig-lab-results width=100%}
+
+The unmeasured chain develops substantial subsystem entanglement and then saturates below the strict upper bound $4\ln2$. The finite-size offset is expected: a Haar-random pure state of a balanced bipartition does not have an exactly maximally mixed reduced state. Measurements suppress the entropy, and complete measurement makes it zero at the recording times. The modest odd–even modulation is also physical: the central bond of this eight-site open chain is active only in alternate layers.
+
+For an observable $X$ sampled in $N$ independent trajectories, we plot the mean and estimate its standard error as
+
+$$
+\overline X=\frac1N\sum_{r=1}^N X_r,\qquad
+\operatorname{SE}(\overline X)=
+\sqrt{\frac{\sum_r(X_r-\overline X)^2}{N(N-1)}}.
+$$ {#eq-lab-error}
+
+The shaded band is $\overline X\pm2\operatorname{SE}$. It is a descriptive uncertainty estimate, not a rigorous simultaneous confidence band. Values at different times on the same trajectory are correlated; independent trajectories, rather than time points, are the statistical units.
+
+The right panel compares quantities related by exact inequalities:
+
+$$
+-\ln\overline{\operatorname{Tr}\rho_A^2}
+\;\leq\;\overline{S_2(A)}
+\;\leq\;\overline{S_1(A)}.
+$$ {#eq-lab-ordering}
+
+The first inequality is Jensen's inequality for the convex function $-\ln x$; the second holds for every density matrix. The CSV stores all three. The first is an annealed entropy, not the average of the trajectory Rényi entropies. On these small systems the difference can be slight, which is precisely why definitions need to be settled before plotting.
+
+::: {.callout-important}
+## What these data establish
+
+These are original numerical illustrations of an eight-qubit model. They demonstrate unitary growth and suppression by monitoring. They do **not** locate the measurement-induced critical point, determine critical exponents, establish a stable volume-law phase in the thermodynamic limit, or distinguish nearby universality classes. Those conclusions require finite-size and finite-time analyses beyond this exercise.
+:::
+
+## Checks that address physics rather than appearance
+
+The script runs ten checks before generating the CSV. They test: the unitarity of QR gates; both entropies of a Bell pair; preparation of that Bell pair from a Hadamard and a correctly ordered CNOT; its probability-$1/2$ measurement and normalized product-state collapse; equality of bitwise gate application to an independent tensor-product construction; zero postmeasurement entropy at $p=1$; and the exact Haar-average output purity $4/5$ for a two-qubit product input.
+
+To see the last result, a Haar-random pure state in $\mathbb C^{d_A}\otimes\mathbb C^{d_B}$ obeys
+
+$$
+\overline{\operatorname{Tr}\rho_A^2}=
+\frac{d_A+d_B}{d_A d_B+1}.
+$$
+
+Setting $d_A=d_B=2$ gives $4/5$. The script draws 12,000 gates and checks consistency within six estimated standard errors. This is a seeded statistical check of the sampler, not a proof of Haar randomness. The derivation from the two-copy twirl in the mapping chapter supplies the exact result.
+
+Run the experiment from the repository root:
+
+```sh
+julia --startup-file=no scripts/circuits.jl
+python3 scripts/make_figures.py
+```
+
+The Python command assumes the plotting requirements are installed as described in the README. The simulator overwrites only its generated CSV; the plotting script overwrites only its generated figure assets. Source and numerical output are kept under version control so the figure can always be matched to its data.
+
+## Scaling the calculation honestly
+
+The state requires $16\times2^L$ bytes in `ComplexF64`, before work arrays. At $L=24$ this is about 256 MiB; at $L=30$ it is about 16 GiB. Gate application costs roughly $O(L2^L)$ per layer. For a balanced cut, a dense SVD of a $2^{L/2}\times2^{L/2}$ coefficient matrix costs approximately $O(2^{3L/2})$. Entropy extraction can become more expensive than time evolution.
+
+Matrix-product states can make low-entanglement trajectories accessible at much larger $L$, provided the discarded Schmidt weight is controlled. Clifford tableaux access still larger stabilizer circuits but change the ensemble and restrict the state family. Gaussian methods apply only to Gaussian-preserving evolution and measurements. There is no method-independent statement that an area law alone makes every task easy, or that a volume law makes every state difficult: stabilizer states are the standard counterexample.
+
+## Exercises and solutions
+
+**1. Memory accounting.** How many complex amplitudes are needed for 12 qubits? How many matrix entries would a full-system unitary contain?
+
+*Solution.* The state has $2^{12}=4096$ amplitudes, or 64 KiB at 16 bytes each. A full-system unitary has $2^{24}$ complex entries, or 256 MiB. Applying local gates avoids constructing it.
+
+**2. Timing convention.** Suppose the $p=1$ data show a positive entropy after every layer. Identify two likely explanations.
+
+*Solution.* The entropy may have been measured before the layer's measurements; then it can be nonzero. Alternatively, some sites may not have been measured, or collapse may have been applied without zeroing all incompatible amplitudes. If all single sites are rank-one measured and the state is correctly conditioned, the recorded entropy must vanish.
+
+**3. Averages.** A fair ensemble has purity $1$ in one realization and $1/4$ in the other. Compute the average $S_2$ and the annealed $S_2$.
+
+*Solution.* The former is $\tfrac12(0+\ln4)=\ln2$. The latter is $-\ln(5/8)=\ln(8/5)$, which is smaller. Averaging and logarithms do not commute.
+
+**4. A finite-size project.** Modify the script to study even $L=4,6,8,10$ and several measurement rates. What analysis would distinguish a crossover from evidence for a transition?
+
+*Solution/hint.* First check stationarity by increasing $T$ at each size; retain independent trajectories and quantify uncertainty. Examine entropy density, appropriate mutual information or tripartite information, and whether putative crossing locations drift with $L$. Try a common finite-size scaling ansatz and assess its stability under dropping the smallest sizes. A visually appealing collapse from four small sizes is suggestive, not decisive. Keep this extension in a separate data file with its parameters recorded.

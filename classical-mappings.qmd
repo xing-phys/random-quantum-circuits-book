@@ -1,0 +1,372 @@
+# From quantum amplitudes to classical models {#sec-classical-mappings}
+
+Why does introducing random gates make an exponentially large quantum problem easier? The main simplification occurs after choosing an observable and combining the circuit with its complex conjugate. Haar averaging then reduces a large space of amplitudes to a small set of ways to connect, or *pair*, copies of the circuit. Those connections become variables in an effective classical model.
+
+This chapter derives that mechanism in a concrete example: the second Rényi entropy of a region in an independently Haar-random unitary circuit. It develops the bridge introduced in Section 2.6 and used in Section 3.1.3 of the review [@fisher2023]. We will carefully distinguish exact ensemble identities from statements about typical entropies.
+
+## A circuit as an indexed tensor network
+
+A two-site gate is a tensor with two input and two output indices,
+
+$$
+(u_{t,x})^{a'b'}_{ab}
+=\bra{a'b'}u_{t,x}\ket{ab},
+\qquad a,b,a',b'=0,\ldots,q-1.
+$$ {#eq-map-gate-tensor}
+
+Connecting an output index of one gate to an input index of another means summing over the common index. The elementary example is matrix multiplication:
+
+$$
+(vu)_{ca}=\sum_bv_{cb}u_{ba}.
+$$ {#eq-map-contraction}
+
+A full circuit amplitude $\bra{\mathbf a}U(t;0)\ket{\mathbf b}$ is a sum of products of local gate entries over all intermediate site configurations. This is simultaneously a tensor-network contraction and a discrete real-time path integral. Each intermediate configuration is a history in the computational basis; its weight is an amplitude, generally complex. It is not a probability distribution over classical spin histories.
+
+For a product initial state, attach its on-site amplitudes to the bottom input indices. Leaving the top indices free gives the final wavefunction. Complex conjugating all entries gives the bra layer. Taking an inner product joins the corresponding free indices and sums them.
+
+An expectation value therefore already uses two layers:
+
+$$
+\langle O(t)\rangle
+=\bra{\psi_0}U^\dagger O U\ket{\psi_0}.
+$$ {#eq-map-doubled}
+
+In a tensor drawing it is often convenient to show the conjugate layer as $U^*$ with its boundary contractions specifying the transposition needed for $U^\dagger$. The two representations are identical index statements. The complex-conjugate layer is essential: averaging $U$ alone would not compute a physical expectation value.
+
+## The swap identity for purity
+
+Introduce two identical copies of the system, called replicas one and two. Let $F_A$ exchange their degrees of freedom in region $A$ while acting as the identity on both copies of $\bar A$:
+
+$$
+F_A\bigl(\ket{a,b}_1\ket{a',b'}_2\bigr)
+=\ket{a',b}_1\ket{a,b'}_2.
+$$ {#eq-map-swap-definition}
+
+Here $a,a'$ label $A$ and $b,b'$ label $\bar A$. For any density matrix $\rho$,
+
+$$
+\tr\rho_A^2=\tr\bigl[(\rho\otimes\rho)F_A\bigr].
+$$ {#eq-map-swap-trick}
+
+To prove it, expand the right side in a product basis:
+
+$$
+\tr\bigl[(\rho\otimes\rho)F_A\bigr]
+=\sum_{a,a',b,b'}\rho_{ab,a'b}\rho_{a'b',ab'}
+=\sum_{a,a'}(\rho_A)_{aa'}(\rho_A)_{a'a}.
+$$ {#eq-map-swap-proof}
+
+The last expression is exactly $\tr\rho_A^2$. No randomness, purity of the global state, or approximation has been used.
+
+For $\rho(t)=U\rho_0U^\dagger$ this becomes
+
+$$
+P_A(t)=\tr\left[\rho_0^{\otimes2}
+U^{\dagger\otimes2}F_AU^{\otimes2}\right].
+$$ {#eq-map-evolved-swap}
+
+There are now two forward copies of $U$ and two conjugate copies. At the final boundary, forward and backward indices are joined within the same replica in $\bar A$, and crossed between replicas in $A$.
+
+| Final-time region | Connection of forward to backward copies |
+|:--|:--|
+| $\bar A$ | $1\leftrightarrow\bar1$, $2\leftrightarrow\bar2$ |
+| $A$ | $1\leftrightarrow\bar2$, $2\leftrightarrow\bar1$ |
+
+The boundary of $A$ is consequently a boundary between two different pairing patterns. This elementary fact will become the domain-wall picture of entanglement.
+
+![The two pairings of two forward indices with two conjugate indices. Identity pairing connects corresponding replicas; swap pairing exchanges them. The crossing represents an index contraction, not a physical gate. Original diagram for this book.](figs/pairings){#fig-map-pairings width=90% fig-alt="Identity pairing joins lower indices a1 and a2 straight upward to b1 and b2. Swap pairing crosses the two connections."}
+
+### Higher moments require more copies
+
+Let $C_A^{(n)}$ cyclically permute $n$ replicas in $A$. The same index argument yields
+
+$$
+\tr\rho_A^n=\tr\left[\rho^{\otimes n}C_A^{(n)}\right].
+$$ {#eq-map-cycle-trick}
+
+One may choose either orientation of the cycle, provided it is used consistently: for $n$ identical factors both give the same trace. An integer-$n$ Rényi moment uses $n$ forward and $n$ conjugate circuit layers. The entropy is obtained only after taking a logarithm and multiplying by $1/(1-n)$.
+
+Replicas here are a mathematical way to organize powers of a density matrix. They need not be physically present in the original experiment, although interference between experimentally prepared copies can sometimes measure the corresponding swap observables.
+
+## The first Haar moment
+
+For a Haar-random $D\times D$ unitary,
+
+$$
+\mathbb E_u[u_{ij}u^*_{k\ell}]
+=\frac{\delta_{ik}\delta_{j\ell}}{D}.
+$$ {#eq-map-first-haar}
+
+The reasoning is short. Invariance under independent changes of basis on the input and output spaces means that the average must be proportional to $\delta_{ik}\delta_{j\ell}$. Summing over $i=k$ and using $\sum_i u_{ij}u^*_{i\ell}=\delta_{j\ell}$ fixes the coefficient to $1/D$.
+
+This is the index form of the depolarizing identity $\mathbb E_u(uXu^\dagger)=I\,\tr X/D$. It explains why the one-copy averaged density matrix is often too featureless to reveal information dynamics. Entanglement requires at least the next moment.
+
+## Two-copy twirling and its two invariant operators
+
+Consider the linear map
+
+$$
+\mathcal T_2(X)
+=\mathbb E_u\left[u^{\dagger\otimes2}Xu^{\otimes2}\right]
+$$ {#eq-map-twirl-definition}
+
+on operators acting on $\mathbb C^D\otimes\mathbb C^D$. Because Haar measure is invariant, $\mathcal T_2(X)$ commutes with every $v\otimes v$. The only independent operators with that property are the identity $I$ and the full replica swap $F$.
+
+One way to understand this last statement is to split the two-replica Hilbert space into symmetric and antisymmetric vectors. The projectors are $(I+F)/2$ and $(I-F)/2$. Under all $v\otimes v$, each sector is irreducible, and an invariant operator acts as a scalar on each. Equivalently it is a linear combination of $I$ and $F$. This is the two-copy instance of the general permutation structure below.
+
+Write $\mathcal T_2(X)=aI+bF$. Both the ordinary trace and the trace after multiplying by $F$ are preserved, since $F$ commutes with $u\otimes u$. Using
+
+$$
+\tr I=D^2,\qquad\tr F=D,\qquad F^2=I,
+$$
+
+gives two equations. Solving them yields
+
+$$
+\mathcal T_2(X)=
+\frac{\tr X-D^{-1}\tr(XF)}{D^2-1}\,I
++\frac{\tr(XF)-D^{-1}\tr X}{D^2-1}\,F.
+$$ {#eq-map-twirl-exact}
+
+This formula is exact for $D\geq2$. Substitution gives $\mathcal T_2(I)=I$ and $\mathcal T_2(F)=F$, as it must. It is a very efficient alternative to integrating every gate matrix element separately.
+
+### Pairing vectors and the Gram matrix
+
+The same simplification can be expressed directly in the four-layer tensor network. Order the layers as two forward copies followed by two conjugate copies, and define unnormalized vectors
+
+$$
+\ket e=\sum_{i,j}\ket{i,j;i,j},
+\qquad
+\ket s=\sum_{i,j}\ket{i,j;j,i}.
+$$ {#eq-map-pairing-vectors}
+
+They represent the uncrossed and crossed pairings. Unitarity implies that both are invariant under $u\otimes u\otimes u^*\otimes u^*$. They are not orthogonal:
+
+$$
+G=\begin{pmatrix}
+\langle e|e\rangle&\langle e|s\rangle\\
+\langle s|e\rangle&\langle s|s\rangle
+\end{pmatrix}
+=\begin{pmatrix}D^2&D\\D&D^2\end{pmatrix}.
+$$ {#eq-map-pairing-gram}
+
+The average of a unitary representation over a compact group is an orthogonal projector onto its invariant vectors. Indeed, multiplying two independent averages gives the same average by Haar invariance, and invariance under $u\mapsto u^\dagger$ makes it Hermitian. Therefore
+
+$$
+\mathbb E_u[u\otimes u\otimes u^*\otimes u^*]
+=\Pi_{\mathrm{pair}}
+=\sum_{\alpha,\beta\in\{e,s\}}
+\ket\alpha(G^{-1})_{\alpha\beta}\bra\beta.
+$$ {#eq-map-invariant-projector}
+
+Inverting the two-by-two matrix gives
+
+$$
+\Pi_{\mathrm{pair}}
+=\frac{1}{D^2-1}\left[
+\ket e\bra e+\ket s\bra s
+-\frac1D\bigl(\ket e\bra s+\ket s\bra e\bigr)
+\right].
+$$ {#eq-map-projector-expanded}
+
+The entire four-layer gate has been reduced to two pairing labels on either side of a local projector. It would be incorrect to replace this expression by the sum of two independently normalized rank-one projectors: the pairing vectors overlap.
+
+This Gram-matrix construction is the elementary form of Haar integration by permutations. A systematic treatment for arbitrary moments is provided by Collins and Śniady [@fnd-collins2006].
+
+## An exact local calculation: moving a purity cut
+
+Apply @eq-map-twirl-exact to a two-qudit physical gate acting on neighboring sites $x,y$. Its one-copy dimension is $D=q^2$. In the two-replica Hilbert space, let $F_x$ swap the copies of site $x$, let $F_y$ swap those of site $y$, and let $F=F_xF_y$ swap the whole pair. For $X=F_x$,
+
+$$
+\tr X=q^3,\qquad\tr(XF)=\tr F_y=q^3.
+$$
+
+The factor $q^3$ can be checked by counting replica loops: swapping one site's replicas has trace $q$, while leaving the other site's two replicas unchanged has trace $q^2$. Substituting into the exact twirl gives
+
+$$
+\mathbb E_u\left[u^{\dagger\otimes2}F_xu^{\otimes2}\right]
+=w(I+F_xF_y),
+\qquad w=\frac{q}{q^2+1}.
+$$ {#eq-map-local-purity-update}
+
+There is a simple spatial interpretation. Suppose $F_A$ swaps a left half-chain, with its boundary lying inside the gate. On the two acted-on sites it looks like $F_x$. The identity term removes the swap on $x$ and moves the boundary one site to the left. The $F_xF_y$ term adds a swap on $y$ and moves the boundary one site to the right. Both moves carry weight $w$.
+
+If both acted-on sites belong to $A$, the local swap is $F_xF_y$ and is unchanged by the gate. If neither belongs to $A$, the local operator is the identity and is also unchanged. Thus only a gate crossing the entanglement cut contributes to its motion.
+
+Let $P_j(t)$ be the purity of sites to the left of the cut between $j$ and $j+1$. For a layer with an active gate crossing that cut,
+
+$$
+\overline{P_j(t)}
+=w\left[\overline{P_{j-1}(t-1)}
++\overline{P_{j+1}(t-1)}\right].
+$$ {#eq-map-purity-recursion}
+
+An overbar denotes averaging over independent Haar gates. If that layer has no gate crossing the cut, $P_j(t)=P_j(t-1)$ exactly. The recursion closes because the most recent crossing gate is independent of all earlier gates, so its twirl can be performed first.
+
+This is an exact finite-$q$ statement about the average purity. It already exhibits a classical process: a cut propagated backward through the circuit chooses between two neighboring positions, with a multiplicative weight.
+
+### Product-state boundary conditions and the annealed rate
+
+For a product initial state, $P_j(0)=1$ at every cut. In an effectively infinite chain, a cut arriving at an active gate branches left or right. After that move, the alternating brickwork parity ensures another active gate in the preceding layer. If there are $N$ such backward steps, there are $2^N$ paths, each of weight $w^N$. Hence
+
+$$
+\overline{P_j(t)}=(2w)^N,
+\qquad
+-\ln\overline{P_j(t)}
+=N\ln\frac{q^2+1}{2q}.
+$$ {#eq-map-product-purity}
+
+The final layer may not cross the chosen cut, giving $N=t-1$ rather than $t$; these parity effects are an $O(1)$ offset at long times. A physical boundary or a second entanglement cut changes the allowed paths, so the formula is not a finite-system saturation law.
+
+For qubits, the factor per active backward step is $2w=4/5$. After one such step the mean purity is $4/5$, and the corresponding entropy $-\ln\overline P$ is $\ln(5/4)$. This agrees with a separate calculation: applying one Haar-random $4\times4$ gate to a fixed product vector gives a Haar-random two-qubit pure state, whose mean one-qubit purity is $4/5$.
+
+At large $q$, $w=q^{-1}+O(q^{-3})$. A path of $N$ steps costs roughly $N\ln q$, but the $2^N$ ways to choose it contribute a path entropy $N\ln2$. Keeping the latter matters at finite $q$. A minimum-cut picture keeps the leading cost in $\ln q$ and does not by itself retain all finite-$q$ path fluctuations.
+
+## A second worked example: a random pure state
+
+The same method gives the mean purity of a subsystem of a globally Haar-random pure state. Let $\dim\mathcal H_A=a$, $\dim\mathcal H_B=b$, and $D=ab$. By invariance,
+
+$$
+\mathbb E_{\psi}\left[(\ket\psi\bra\psi)^{\otimes2}\right]
+=\frac{I+F_{AB}}{D(D+1)}.
+$$ {#eq-map-random-state-second-moment}
+
+To derive the coefficient, note that $\ket\psi^{\otimes2}$ lies in the symmetric subspace. Haar averaging gives a scalar times its projector $(I+F_{AB})/2$. The subspace dimension is $D(D+1)/2$, and the averaged matrix has trace one.
+
+Using the swap identity,
+
+$$
+\overline{P_A}
+=\frac{\tr F_A+\tr(F_{AB}F_A)}{D(D+1)}
+=\frac{ab^2+a^2b}{ab(ab+1)}
+=\frac{a+b}{ab+1}.
+$$ {#eq-map-lubkin-purity}
+
+This mean-purity result is associated with Lubkin's analysis of random subsystems [@fnd-lubkin1978]. If $b\gg a$, it is close to $1/a$, the minimum purity of $A$. If $a=b\gg1$, it is approximately $2/a$, giving $-\ln\overline P_A\simeq\ln a-\ln2$.
+
+The smaller subsystem is consequently almost maximally mixed when the complementary reservoir is much larger. The equal-size correction reminds us that a Haar-random pure state is not a state whose smaller reduced density matrix is exactly uniform. Also, @eq-map-lubkin-purity is a purity result; it is not the formula for the mean von Neumann entropy.
+
+## Why a pairing model resembles a classical magnet
+
+At each independent gate the Haar average inserts a sum over pairing labels. Contracting neighboring gate tensors then gives local interactions between those labels. For two replicas the labels are the identity pairing $e$ and swap pairing $s$, so they resemble an Ising spin with two possible orientations.
+
+The swap boundary condition at the final time fixes $s$ in $A$ and $e$ in $\bar A$. A boundary between the two patterns must propagate into the circuit. In one spatial dimension it is a path in two-dimensional spacetime: a *domain wall*. The exact recursion above is its simplest transfer rule. For a finite interval there are two initial endpoints, and the corresponding walls can meet. When they do, the boundary topology changes; this is the microscopic origin of entanglement saturation in the domain-wall picture.
+
+The spin labels are not physical spins in the original quantum chain. They describe how forward and backward trajectories are connected after averaging. A physical circuit gate does not perform a random walk of an actual cut. Rather, the complete sum of quantum interference terms has been reorganized into a simpler weighted sum for one particular averaged observable.
+
+There is also a distinction between a statistical-mechanics mapping and a stochastic process. A partition function is a weighted configuration sum; its local weights need not be normalized probabilities. In the simple path calculation, $2w<1$ at finite $q>1$, so $w$ itself is not a two-outcome transition probability. One can write $w=(2w)\times(1/2)$, interpreting $1/2$ as an unbiased step probability and $2w$ as an additional attenuation factor. More general Haar expansions can contain signed intermediate weights. Positivity and Markov normalization must be demonstrated for the particular reduced representation being used.
+
+### More replicas: permutations and loop counting
+
+With $n$ forward and $n$ conjugate layers, every complete pairing connects each forward copy to one conjugate copy. Such a bijection is a permutation $\sigma\in S_n$, where $S_n$ is the symmetric group. Define
+
+$$
+\ket\sigma=
+\sum_{i_1,\ldots,i_n}
+\ket{i_1,\ldots,i_n;
+i_{\sigma^{-1}(1)},\ldots,i_{\sigma^{-1}(n)}}.
+$$ {#eq-map-general-pairing}
+
+The overlap between two pairings is
+
+$$
+\langle\sigma|\tau\rangle
+=D^{C(\sigma^{-1}\tau)},
+$$ {#eq-map-permutation-overlap}
+
+where $C(\pi)$ counts the cycles of permutation $\pi$, including fixed points. To see this, equate the indices imposed by the two pairings. Each cycle leaves exactly one freely summed index, contributing $D$. At a single physical site replace $D$ by $q$; for a two-site gate, $D=q^2$.
+
+For $D\geq n$ these pairing vectors are linearly independent, and the invariant projector is obtained by inverting their Gram matrix. For smaller $D$, linear dependencies require restricting to the independent invariant space or using the appropriate generalized inverse. The general matrix-element Haar integral can be written as
+
+$$
+\mathbb E_u\left[
+\prod_{r=1}^{n}u_{i_rj_r}
+\prod_{r=1}^{n}u^*_{i'_rj'_r}
+\right]
+=\sum_{\sigma,\tau\in S_n}
+\left(\prod_{r=1}^{n}\delta_{i_r,i'_{\sigma(r)}}
+\delta_{j_r,j'_{\tau(r)}}\right)
+\mathrm{Wg}_{D}(\sigma^{-1}\tau).
+$$ {#eq-map-weingarten}
+
+Here $\mathrm{Wg}_D$ is the unitary Weingarten function, the coefficient supplied by that inverse Gram structure. For $n=2$ its values are $\mathrm{Wg}_D(e)=1/(D^2-1)$ and $\mathrm{Wg}_D(s)=-1/[D(D^2-1)]$, reproducing @eq-map-projector-expanded. The negative coefficient illustrates why an arbitrary term-by-term expansion should not automatically be interpreted as a positive probability model.
+
+The effective pairing variables have independent relabeling symmetries for the forward and backward replicas. With a chosen convention, $\sigma$ transforms as $\sigma\mapsto g_F\sigma g_B^{-1}$; exchanging forward and backward layers sends $\sigma\mapsto\sigma^{-1}$. These operations give the familiar replica symmetry structure $(S_n\times S_n)\rtimes\mathbb Z_2$ when the full observable and boundaries respect it. Boundary permutations explicitly select particular pairings.
+
+For $n>2$, a domain wall is labeled by the relative permutation between its two sides. Walls can split or merge, provided their labels compose consistently. This combinatorics is richer than a single Ising interface and explains why distinct Rényi indices need not share the same line tension or fluctuation corrections.
+
+## Annealed, quenched, and typical quantities
+
+The average calculated by the purity recursion is $\overline{P_A}$, whereas an average second Rényi entropy is $\overline{S_{2,A}}=-\overline{\ln P_A}$. These are different objects. Define
+
+$$
+S_{2,A}^{\mathrm{ann}}=-\ln\overline{P_A},
+\qquad
+S_{2,A}^{\mathrm{que}}=-\overline{\ln P_A}.
+$$ {#eq-map-annealed-quenched}
+
+The names *annealed* and *quenched* come from disordered statistical mechanics, where the logarithm of a partition function is a free energy. Jensen's inequality for the convex function $-\ln x$ gives
+
+$$
+S_{2,A}^{\mathrm{ann}}\leq S_{2,A}^{\mathrm{que}}.
+$$ {#eq-map-jensen}
+
+The distinction can persist in the coefficient of a long-time growth law. Rare circuits with unusually large purity receive disproportionate weight in $\overline P$, because purity is the exponential of minus entropy.
+
+For a simple illustration, imagine an ensemble with purity $1$ in a fraction $r$ of realizations and $e^{-sL}$ in the rest. If $r$ is independent of $L$, then $-\ln\overline P\to-\ln r$ as $L\to\infty$, while $-\overline{\ln P}=(1-r)sL$. An average purity can be governed by a minority of low-entanglement samples. This illustration is a probability example, not a claim about the frequency of such samples in the Haar circuit.
+
+A formal replica route to the logarithm uses
+
+$$
+\overline{\ln P}
+=\left.\frac{\partial}{\partial k}\overline{P^k}\right|_{k=0}
+=\lim_{k\to0}\frac{\overline{P^k}-1}{k}.
+$$ {#eq-map-replica-log}
+
+For positive integer $k$, $P^k$ uses $2k$ forward and $2k$ conjugate copies of the circuit. Calculating those integer moments may be exact, but analytic continuation to $k=0$ and interchange of limits require justification. Knowing a few integer moments does not uniquely determine the continuation. The von Neumann limit $n\to1$ is another continuation and must not be confused with $k\to0$.
+
+In statements about a *typical* entropy, one must also specify concentration or the scale of fluctuations. The mean, median, and almost-sure leading coefficient can coincide under suitable concentration, but equality is a conclusion to establish. An annealed result alone does not establish it.
+
+## What survives beyond an independent Haar average?
+
+For a fixed gate, the replicated unitary preserves the paired invariant subspace, but also acts nontrivially on its orthogonal complement. Schematically,
+
+$$
+u^{\otimes2}\otimes u^{*\otimes2}
+=\Pi_{\mathrm{pair}}+R_u,
+\qquad \overline{R_u}=0.
+$$ {#eq-map-remainder}
+
+Because the invariant subspace and its orthogonal complement are both preserved, this can be made an exact operator decomposition, with $R_u$ supported on the complement. The Haar average removes $R_u$ gate by gate. A specified deterministic circuit retains it.
+
+One can still organize a contraction in terms of pairing regions and corrections from nonpaired sectors. Coarse graining can produce a dressed interface with a model-dependent line tension, as developed by Zhou and Nahum [@zhou2020membrane]. The algebraic decomposition is exact; the claim that short-distance corrections reduce to a useful local membrane theory depends on the dynamical regime and controlled limits. It is not a universal proof for integrable, localized, or arbitrary circuits.
+
+Other ensembles also require their own invariant structures. Charge-conserving gates leave additional slow degrees of freedom. Repeating the same Floquet gates correlates different time slices in the average. Measurements introduce both nonunitary local tensors and the Born-weighted normalization factors derived in @sec-circuits. These changes preserve the usefulness of replicated tensor networks while altering the resulting classical model.
+
+## Exercises with answers and hints
+
+1. **Swap spectrum.** Show that $F^2=I$ and compute the dimensions of its $+1$ and $-1$ eigenspaces on $\mathbb C^D\otimes\mathbb C^D$.
+
+   *Answer:* The symmetric space has dimension $D(D+1)/2$ and the antisymmetric space dimension $D(D-1)/2$. Their difference gives $\tr F=D$.
+
+2. **Check the projector.** Verify that @eq-map-projector-expanded sends $\ket e$ to $\ket e$ and $\ket s$ to $\ket s$. Explain why this proves idempotence on their span.
+
+   *Hint:* Use the Gram matrix rather than treating the two vectors as orthogonal. The operator annihilates the orthogonal complement by construction.
+
+3. **Qutrit purity.** A Haar-random gate acts on a fixed product state of two qutrits. Find the average one-qutrit purity and $-\ln\overline P$. Is this the average von Neumann entropy?
+
+   *Answer:* With $a=b=3$, @eq-map-lubkin-purity gives $3/5$, and $-\ln\overline P=\ln(5/3)$. It is an annealed second Rényi quantity, not a mean von Neumann entropy.
+
+4. **Counting paths at fixed displacement.** A purity wall makes $N$ steps, each left or right, with weight $w$. What is the total weight of paths whose final displacement is $m$?
+
+   *Answer:* If $N+m$ is even and $|m|\leq N$, it is $\binom{N}{(N+m)/2}w^N$; otherwise it is zero. Summing over $m$ gives $(2w)^N$. This binomial factor is the entropic contribution to the coarse-grained wall free energy.
+
+5. **Permutation loops.** For $n=3$, compute $\langle e|(123)\rangle$ and $\langle e|(12)\rangle$ in the pairing notation.
+
+   *Answer:* A three-cycle has one cycle and a transposition has two, so the overlaps are $D$ and $D^2$, respectively. The identity pairing has norm squared $D^3$.
+
+6. **The sign of the averaging error.** Suppose $P$ takes two distinct positive values with nonzero probabilities. Prove that $-\ln\overline P<-\overline{\ln P}$. When can equality hold?
+
+   *Answer:* Strict convexity of $-\ln$ gives a strict inequality for a nonconstant random variable. Equality holds only when $P$ is constant almost surely.
+
+The essential bridge is now explicit. Entropy moments impose permutation boundary conditions on replicated circuits. Independent Haar averages turn local quantum gates into pairing tensors. Contracting those tensors gives a classical configuration sum whose interfaces encode information dynamics. The next chapters use that bridge to derive entanglement growth, operator fronts, and monitored phases.

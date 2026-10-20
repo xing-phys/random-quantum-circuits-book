@@ -1,6 +1,9 @@
 project:
   type: book
   output-dir: _site
+  pre-render:
+    - python3 scripts/assemble_bibliography.py
+    - python3 scripts/check_book.py --source-only
   resources:
     - data/*.csv
     - scripts/*.jl
@@ -31,21 +34,21 @@ book:
     collapse-level: 1
   chapters:
     - index.qmd
-    - part: "I · Building the language"
+    - part: "Building the language"
       chapters:
         - foundations.qmd
         - circuits.qmd
         - classical-mappings.qmd
-    - part: "II · Unitary many-body dynamics"
+    - part: "Unitary many-body dynamics"
       chapters:
         - entanglement.qmd
         - operator-spreading.qmd
         - structured-unitary.qmd
-    - part: "III · Dynamics under observation"
+    - part: "Dynamics under observation"
       chapters:
         - monitored.qmd
         - structured-monitored.qmd
-    - part: "IV · From theory to practice"
+    - part: "From theory to practice"
       chapters:
         - laboratories.qmd
         - experiments.qmd
@@ -92,4 +95,3 @@ format:
 
 execute:
   enabled: false
-

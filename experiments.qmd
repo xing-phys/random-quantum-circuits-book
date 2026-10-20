@@ -1,0 +1,198 @@
+# What an experiment actually measures {#sec-experiments}
+
+An entropy in a theoretical calculation is a nonlinear function of a density matrix. A laboratory produces individual detector outcomes. Connecting the two requires a protocol, an estimator, and a clear statement of which ensemble is being sampled. This chapter develops that connection for the observables in the review [@fisher2023]. The experiments discussed are historical examples supporting its ideas; this is not a ranking of present-day hardware or a comprehensive survey of the latest results.
+
+## Digital simulators as many-body systems
+
+Superconducting processors and trapped-ion devices can implement sequences of few-qubit gates, spatially resolved readout, and sometimes measurement-conditioned control. Analog platforms such as optical lattices, Rydberg arrays, and ion chains instead realize a Hamiltonian with tunable parameters. Both approaches study many-body dynamics, but the gate description is particularly natural for a digital processor: locality, gate structure, measurement placement, and feedback can be specified individually.
+
+A circuit used as a many-body experiment need not implement a useful algorithm. An operator front, a topological state's correlations, or a dynamical ordering transition is already a physical observable. Conversely, a successful quantum-computing benchmark does not by itself establish a particular many-body phase. State preparation, observables, timescales, and finite-size diagnostics must be matched to the question.
+
+Random-circuit sampling supplied an early prominent example: the 2019 Sycamore experiment sampled output strings of a circuit on 53 superconducting qubits [@arute2019]. Its task was to generate the distribution $p_U(x)=|\langle x|U|0\rangle|^2$, not to estimate a particular local equilibrium observable. Classical comparison costs depend on the architecture, depth, requested accuracy, noise model, and available algorithms. Historical runtime estimates are not permanent mathematical lower bounds.
+
+### Why a sampling score is not a universal certificate
+
+Let $D=2^L$. A common linear cross-entropy score for strings sampled from an experimental distribution $r(x)$ is
+
+$$
+F_{\mathrm{XEB}}=D\sum_x r(x)p_U(x)-1.
+$$ {#eq-experiment-xeb}
+
+If $r$ is uniform, this score is exactly zero. For ideal sampling $r=p_U$ and a Haar-random state, its ensemble mean is
+
+$$
+\mathbb E_U F_{\mathrm{XEB}}=D\frac{2}{D+1}-1
+=\frac{D-1}{D+1},
+$$
+
+which approaches one. We used the exact Haar collision probability $\mathbb E_U\sum_xp_U(x)^2=2/(D+1)$. Under the *specific* mixture model $r=f p_U+(1-f)/D$, the mean score is $f(D-1)/(D+1)$. The interpretation as a fidelity proxy therefore has assumptions. A score is one weighted average of $r$; many different distributions can have the same score. It is not automatically a bound on total-variation distance or a certification of every many-body property.
+
+Large entanglement also needs interpretation. A stabilizer state can have a volume law and still admit efficient classical manipulation. Claims about sampling hardness require complexity assumptions and an explicit approximation criterion, in addition to entanglement diagnostics.
+
+## Tomography and two-copy purity
+
+An $n$-qubit density matrix has $4^n-1$ independent real parameters. Expanding it in Pauli operators makes this count concrete:
+
+$$
+\rho=2^{-n}\sum_{P\in\{I,X,Y,Z\}^{\otimes n}}\langle P\rangle P.
+$$
+
+Tomography measures enough distinct observables to reconstruct these parameters, with consistency constraints and statistical uncertainty. Once reconstructed, $S_1$, $S_2$, and any other state function can be computed. The number of parameters explains why unrestricted tomography becomes expensive rapidly. A small subsystem can still be tomographed even when the whole device cannot.
+
+An alternative is to measure purity directly. For any two operators $A,B$ on the same Hilbert space,
+
+$$
+\operatorname{Tr}\bigl[F(A\otimes B)\bigr]=\operatorname{Tr}(AB),
+$$ {#eq-experiment-swap-identity}
+
+where $F\ket{i}\ket{j}=\ket{j}\ket{i}$. Expand the trace in a product basis to verify it:
+
+$$
+\sum_{ij}\langle i,j|F(A\otimes B)|i,j\rangle
+=\sum_{ij}A_{ji}B_{ij}=\operatorname{Tr}(AB).
+$$
+
+For two independently prepared identical copies of a many-body state, swapping only region $A$ therefore measures
+
+$$
+\langle F_A\rangle_{\rho\otimes\rho}
+=\operatorname{Tr}\rho_A^2.
+$$ {#eq-experiment-partial-swap}
+
+The operator has eigenvalues $\pm1$, so its expectation is accessible as a difference of outcome probabilities. Implementations can use interference between physical copies rather than a literal gate-by-gate SWAP measurement. Optical-lattice experiments measured entanglement using this idea [@islam2015], building on proposals for copy interference [@daley2012]. Subsequent experiments connected growing subsystem entropy and local thermalization while the isolated full state remained nearly pure [@kaufman2016].
+
+Purity is an entanglement diagnostic only with a statement about global purity. A mixed product state $\rho_A\otimes\rho_B$ can have low subsystem purity without any entanglement. Conversely, $S_A=S_B$ is guaranteed for a globally pure state but need not hold in a noisy experiment. Measuring both full-system and subsystem purities helps distinguish entanglement-generated local mixing from uncontrolled global mixing.
+
+## Randomized measurements
+
+Two copies do not need to coexist physically if one can reproduce a state many times and randomize the measurement basis. First consider a subsystem of dimension $d$ and apply a global Haar unitary $W$ before computational-basis readout. Let
+
+$$
+P_W(s)=\langle s|W\rho W^\dagger|s\rangle.
+$$
+
+For each fixed $s$, the random rank-one projector $W^\dagger\ket{s}\bra{s}W$ has second moment $(I+F)/[d(d+1)]$. Therefore
+
+$$
+\mathbb E_W\sum_s P_W(s)^2
+=\frac{1+\operatorname{Tr}\rho^2}{d+1}.
+$$ {#eq-experiment-global-random-purity}
+
+Solving for the purity gives an estimator in terms of repeated computational-basis measurements. A unitary 2-design suffices because only the second moment enters. Global Haar control can be demanding, so local random rotations are especially useful.
+
+For $n$ qubits, independently randomize every local basis: $W=\bigotimes_j W_j$. Write $d_H(s,s')$ for the number of sites on which two strings differ. Then [@brydges2019; @elben2019]
+
+$$
+\operatorname{Tr}\rho^2
+=2^n\sum_{s,s'}(-2)^{-d_H(s,s')}
+\mathbb E_W\bigl[P_W(s)P_W(s')\bigr].
+$$ {#eq-experiment-local-random-purity}
+
+We can derive the unusual kernel rather than memorize it. On one qubit define a two-copy diagonal operator $K$ with weight $2$ for equal outcomes and $-1$ for unequal outcomes. If $\Pi_{=}=\ket{00}\bra{00}+\ket{11}\bra{11}$, then $K=3\Pi_{=}-I$. Haar twirling gives
+
+$$
+\mathbb E_W(W^\dagger)^{\otimes2}\Pi_{=}W^{\otimes2}
+=\frac{I+F}{3},
+\qquad \mathbb E_W K_W=F.
+$$
+
+Independent rotations on $n$ sites make the twirl of $K^{\otimes n}$ equal to the full swap. Its diagonal weights multiply: each equal site contributes $2$ and each unequal site $-1$, hence the total weight $2^n(-2)^{-d_H}$. Taking the expectation in $\rho\otimes\rho$ proves @eq-experiment-local-random-purity.
+
+An experimental estimate also needs finite-shot care. If one basis produces counts $n_s$ from $M$ shots, the unbiased pair-frequency estimate is
+
+$$
+\widehat{P(s)P(s')}=
+\frac{n_s(n_{s'}-\delta_{ss'})}{M(M-1)}.
+$$ {#eq-experiment-unbiased-pair}
+
+The subtraction removes pairing a shot with itself. Inserting squared empirical frequencies without it creates a bias. One then averages over independently drawn bases and propagates uncertainty. Applying $-\ln$ to an uncertain purity produces another nonlinear estimation issue; finite-sample estimates can even fall outside physical bounds. A valid analysis reports its estimator, uncertainty, and any constrained fitting procedure. Randomized measurements trade quantum control requirements for repeated preparation and classical processing; they do not remove all exponential costs for arbitrary large subsystems.
+
+## An ancilla as an interferometer
+
+Suppose a system is in $\rho$ and an ancilla in $\ket{+}$. Apply a controlled unitary $V$, acting only when the ancilla is $\ket{1}$. The ancilla's reduced density matrix becomes
+
+$$
+\rho_a=\frac12
+\begin{pmatrix}
+1&\operatorname{Tr}(\rho V^\dagger)\\
+\operatorname{Tr}(\rho V)&1
+\end{pmatrix}.
+$$ {#eq-experiment-hadamard-test}
+
+Thus $\langle X_a\rangle=\operatorname{Re}\operatorname{Tr}(\rho V)$ and $\langle Y_a\rangle=\operatorname{Im}\operatorname{Tr}(\rho V)$. This is the Hadamard-test principle. With $V=W^\dagger(t)B^\dagger W(t)B$ it accesses an out-of-time-order correlator, provided the necessary controlled operations and forward/backward evolutions are implemented. At infinite temperature, $\rho=I/D$, the expectation is the normalized trace used in the theory chapters.
+
+The protocol illustrates why complicated correlation functions are feasible even when state tomography is not. It also exposes a vulnerability: imperfect reversal or ancilla decoherence can reduce the signal in ways resembling physical scrambling. Control experiments, identity circuits, or normalization protocols are needed to separate them. Experiments on superconducting qubits studied the growth and fluctuations of OTOCs and distinguished operator spreading from operator entanglement [@mi2021scrambling]. The existence of a front alone does not diagnose the full computational complexity of the evolving operator.
+
+## Topology and dynamical order
+
+The review highlights two examples in which circuits probe order beyond ordinary equal-time local observables.
+
+For a two-dimensional gapped topologically ordered state, an appropriate simply connected region often has
+
+$$
+S(A)=\alpha|\partial A|-\gamma+\cdots.
+$$
+
+The perimeter term depends on microscopic details. Combinations of entropies of overlapping regions cancel it and isolate a universal constant, with signs set by the chosen combination. For the toric-code phase the magnitude is $\gamma=\ln2$. Preparing the toric-code state and probing anyon braiding demonstrates complementary properties: an entropic pattern and a coherent transformation under exchanging excitations. A superconducting-processor experiment implemented both types of probe [@satzinger2021]. Boundary geometry and finite-size corrections must be specified when comparing a measured constant to the theoretical one.
+
+A discrete time crystal instead has robust subharmonic temporal order: an observable responds with period $2T$ while the drive has period $T$. A single finely tuned spin undergoing exact $\pi$ rotations also flips every period, but that is not sufficient evidence for a many-body phase. Robustness to perturbations, persistence across initial states, spatial correlations, and separation from transient prethermal or noisy oscillations are part of the interpretation.
+
+A spectrum-averaged correlator can hide ordered signs. An Edwards–Anderson-type diagnostic instead squares an eigenstate-dependent long-distance correlator before averaging:
+
+$$
+\chi_{ij}=\frac1D\sum_\alpha
+\left|\langle\alpha|Z_iZ_j|\alpha\rangle\right|^2.
+$$ {#eq-experiment-ea}
+
+If ordered eigenstates have random signs, their unsquared mean can vanish even when $\chi_{ij}$ stays finite. Time-dependent relatives resolve temporal order as well. Quantum-processor experiments used controlled Floquet dynamics and echo/typicality techniques to study such eigenstate order [@mi2022time]. The relevant lesson is to design the observable around the order parameter, rather than infer a phase from oscillations alone.
+
+## The postselection barrier in monitored dynamics
+
+The most important experimental subtlety of monitored circuits is easy to miss. The probability of a measurement record $\mathbf m$ is $P_{\mathbf m}$. To reproduce the **same conditional state** by ordinary repetition, the expected number of trials for one accepted copy is $1/P_{\mathbf m}$. For $M$ independent fair outcomes, this is $2^M$.
+
+One can always collect typical records efficiently. The difficulty is that a nonlinear observable of a conditional state, such as its purity, cannot generally be extracted by blindly pooling copies with different records. Such pooling measures the averaged density matrix. Even when each conditional trajectory is pure, that density matrix may be highly mixed. For unequal record probabilities the cost is governed by their actual distribution, not automatically by exactly $2^M$; the uniform example exposes the exponential scale.
+
+A reference qubit offers a smaller target. Entangle it with the system initially and then measure whether its information survives monitored evolution. Its final density matrix is only $2\times2$, but the basis in which to interpret or recover that information can depend on the entire record. A decoder takes the classical record as input and supplies a correction or a prediction for a reference measurement. Efficient classical decoding is possible for the Clifford protocols used in an eight-system-qubit trapped-ion experiment [@noel2022]. This is a physically valuable demonstration, with ensemble restrictions that should be stated.
+
+Small superconducting circuits also allowed direct postselection and entropy reconstruction [@koh2023]. Their finite-size signatures motivate larger-scale studies; they do not by themselves remove the postselection cost for an arbitrary non-Clifford ensemble.
+
+Spacetime duality provides another route. In specially structured circuits, exchanging a space direction with time converts a preparation/readout problem into an accessible unitary experiment. The resulting ensemble and boundary conditions must be matched to the intended monitored dynamics. One cannot simply rotate a diagram and assume the Born probabilities and normalization remain unchanged.
+
+::: {.callout-note}
+## A development after the review
+
+In 2023, Hoke and collaborators used spacetime duality and decoding diagnostics to study measurement-induced entanglement and teleportation on up to 70 superconducting qubits [@hoke2023]. They reported finite-size signatures and analyzed the role of noise. This illustrates a proposed route beyond brute-force postselection, under the specific conditions of that experiment; it is not a generic efficient entropy-measurement algorithm for all monitored circuits.
+:::
+
+## Noise, monitoring, and what information is available
+
+An ideal measurement whose outcome is retained conditions a trajectory on a known event. An unobserved error couples the system to inaccessible degrees of freedom. These have different consequences. For a state $\rho_{AB}$ coupled to an environment $E$, the entropy of $A$ includes both quantum correlations with $B$ and correlations with inaccessible $E$. It need not measure $A$–$B$ entanglement.
+
+For mixed states, useful quantities include mutual information, operational decoding fidelity, and entanglement negativity. The logarithmic negativity is
+
+$$
+\mathcal E_N(A:B)=\ln\|\rho_{AB}^{T_B}\|_1,
+$$ {#eq-experiment-negativity}
+
+where $T_B$ transposes the matrix indices of subsystem $B$ and $\|X\|_1=\operatorname{Tr}\sqrt{X^\dagger X}$. A separable state stays positive under partial transpose, has trace norm one, and therefore zero logarithmic negativity. A negative partial-transpose eigenvalue certifies entanglement; the converse fails in sufficiently large dimensions because some entangled states have positive partial transpose.
+
+The Bell state provides a quick check: its partial transpose has eigenvalues $1/2,1/2,1/2,-1/2$, so $\mathcal E_N=\ln2$. The incoherent mixture $(\ket{00}\bra{00}+\ket{11}\bra{11})/2$ has zero negativity, even though either single-qubit entropy is $\ln2$. This is why the available measurement record and uncontrolled environment must both be part of an experimental specification.
+
+## Exercises and solutions
+
+**1. Imperfect copies.** Two preparation attempts yield $\rho$ and $\sigma$, rather than identical states. What does a swap measurement return?
+
+*Solution.* It returns $\operatorname{Tr}(\rho\sigma)$, an overlap, by @eq-experiment-swap-identity. Interpreting it as $\operatorname{Tr}\rho^2$ requires reproducibility or a model of the preparation drift.
+
+**2. One-qubit randomized purity.** For $\rho=(I+rZ)/2$, show that a uniformly random measurement axis gives purity $(1+r^2)/2$ through the global protocol.
+
+*Solution.* For axis $\mathbf n$, the probabilities are $(1\pm r n_z)/2$, with squared sum $(1+r^2n_z^2)/2$. Since $\mathbb E n_z^2=1/3$, multiplying the averaged sum by $d+1=3$ and subtracting one gives $(1+r^2)/2$.
+
+**3. Why a decoder matters.** A reference qubit is conditionally in $\ket0$ or $\ket1$ with equal probability, and the record tells which. Compare its conditional and pooled entropies.
+
+*Solution.* Each conditional entropy is zero, but the pooled state is $I/2$ and has entropy $\ln2$. Applying $X$ when the record says one maps every conditional state to $\ket0$ and removes the pooled mixing. The correction uses accessible information; it does not violate unitary entropy conservation for a closed system containing the record.
+
+**4. Negative partial transpose.** Verify the Bell-state spectrum quoted above.
+
+*Solution.* Partial transposition sends the off-diagonal terms $\ket{00}\bra{11}$ and its adjoint to $\ket{01}\bra{10}$ and its adjoint. On the span of $\ket{01},\ket{10}$ the matrix is $\tfrac12\begin{pmatrix}0&1\\1&0\end{pmatrix}$, with eigenvalues $\pm1/2$. The remaining two diagonal entries are $1/2$.
+

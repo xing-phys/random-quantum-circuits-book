@@ -1,0 +1,62 @@
+# Map from the review to this book {#sec-coverage}
+
+This appendix makes the scope auditable. The backbone is Fisher, Khemani, Nahum, and Vijay, *Random Quantum Circuits*, Annual Review of Condensed Matter Physics **14**, 335–379 (2023), DOI [10.1146/annurev-conmatphys-031720-030658](https://doi.org/10.1146/annurev-conmatphys-031720-030658) [@fisher2023]. The accessible full-text working copy used for the section map is [arXiv:2207.14280v1](https://arxiv.org/abs/2207.14280v1). Journal metadata and the review's primary references were checked separately. Section and topic names below follow that working copy; pagination and reference numbering differ from the published article.
+
+Coverage means an explanation of the review's physical subjects, central constructions, and conclusions, with the prerequisites and representative derivations supplied here. It does not mean reprinting every figure, reproducing every cited model's full solution, or importing all 311 references from the final review. Specialized models receive explicit definitions, their essential mechanism, and the limits of the stated results. The bibliography records sources actually used in this book. No original review figure or third-party figure is reproduced.
+
+## Introduction and models
+
+| Review section | Book location and treatment |
+|:--|:--|
+| §1 Introduction | [Opening](index.qmd), @sec-circuits, and @sec-outlook: nonequilibrium universality, digital versus analog simulation, locality and information, the role of randomness, and the relation to Hamiltonian dynamics |
+| §2.1 Circuit building blocks and quantum entanglement | @sec-foundations: tensor products, partial trace, Schmidt decomposition, entropy hierarchy, area/volume laws, and mutual information |
+| §2.2 Two-qubit example | @sec-foundations: Pauli matrices, rotations, entangling gates, Bell/stabilizer examples, conditional local measurement, and classical versus quantum correlations |
+| §2.3 Brickwork random unitary circuit | @sec-circuits: ensemble, clock, boundary conditions, Haar sampling, exact causal cones, and infinite-temperature local equilibrium |
+| §2.4 Measurements and trajectories | @sec-circuits and @sec-mon-record: Kraus products, Born probabilities, normalization, weak measurements, and retained versus discarded records |
+| §2.5 What can these models do? | @sec-circuits, @sec-experiments, @sec-outlook: thermalization, black-hole scrambling motivation, simulation complexity, benchmarks, and new dynamical phases |
+| §2.6 Quantum–classical mappings | @sec-classical-mappings: indexed tensor contractions, replicated observables, Haar twirls, pairings, permutation models, and the limitations of a classical representation |
+
+## Unitary dynamics
+
+**§3.1.1 Membrane picture** is developed in @sec-ent-membrane. We define the tension, derive the Hamilton–Jacobi growth equation, explain the tangent condition involving $v_B$, work through a curved-tension example, and derive the interval-growth/saturation competition. Higher-dimensional membranes and holographic connections are included with their scope stated.
+
+**§3.1.2 Minimal cut** appears in @sec-ent-cut-bound and @sec-ent-kpz: an exact rank bound, its controlled large-$q$ saturation, Poisson versus regular brickwork geometry, directed-polymer wandering, and KPZ entropy fluctuations.
+
+**§3.1.3 Pairing order parameter** is covered in @sec-classical-mappings and @sec-ent-purity through @sec-ent-general-replicas. The book derives the nonorthogonal Gram-matrix projector and two-copy swap twirl, exact averaged-purity recursion and annealed tension, higher permutation sectors, replica symmetry, finite-size Page corrections, and the distinction between averaging a logarithm and taking the logarithm of an average. Deterministic-circuit expansions and the lack of generic positive weights are discussed.
+
+**§3.2 Spreading and decay of correlations** is the subject of @sec-operator-spreading: operator Hilbert space, the exact Haar-averaged string Markov process, endpoint drift and diffusion, the OTOC, large deviations, higher-dimensional growth, and the rare return histories controlling ordinary local correlators. Thin/fat history competition is explained as an ensemble-specific result.
+
+**§3.3.1 Continuous symmetries** maps to @sec-str-charge and @sec-str-fractons: charge-sector gates, an explicit diffusion derivation, hydrodynamic correlation tails, emission of nonconserved operator weight, slower higher-Rényi growth, subsystem and dipole conservation, fractonic constraints, and Hilbert-space fragmentation.
+
+**§3.3.2 Floquet circuits** maps to @sec-str-floquet: fixed versus resampled gates, quasienergies, spectral form factors, the CUE ramp and pairing derivation, Thouless scales, localized phases, time crystals, and anomalous chiral boundary transport.
+
+**§3.3.3 Dual-unitary circuits** maps to @sec-str-dual: reshuffling and its unitarity condition, examples, cancellations, light-ray correlation channels, and qualifications concerning chaos and extra conservation laws.
+
+**§3.3.4 Classically simulable circuits** maps to @sec-str-clifford, @sec-str-brownian-gaussian, and @sec-str-automata: Clifford/stabilizer dynamics and entropy ranks, designs, Brownian circuits, Gaussian covariance evolution and Wick structure, quantum symmetric exclusion, reversible automata, and Rule 54 solitons. The comparison in @sec-str-compare distinguishes easy representation from particular solvable averages.
+
+## Monitored dynamics
+
+**§4.1 Measurement-induced entanglement transition** is expanded throughout @sec-monitored. The volume- and area-law regimes, failure of a naive entropy-loss counting argument, and geometric percolation limit are treated before the replica construction.
+
+**§4.1.1 Coherent trajectories versus dissipative information loss** maps to @sec-mon-record and @sec-mon-channel, with the postselection implications worked out in @sec-experiments. The book includes an exact measurement-entropy-loss identity rather than assuming every local measurement destroys an order-one amount of global entanglement.
+
+**§4.1.2 Domain walls and stability of the volume law** maps to @sec-mon-polymer and @sec-mon-code: Born-weighted replica symmetry, directed-polymer fluctuations, subleading spatial entropy, rare histories, information protection, and the distinction between geometric erasure distance and unrestricted code distance.
+
+**§4.1.3 Mixed-state purification** maps to @sec-mon-purification and @sec-mon-code: reference purification, separation of local relaxation and global purification times, dynamically generated codes, and record-aware diagnostics.
+
+**§4.1.4 Critical point** maps to @sec-mon-critical and @sec-mon-alltoall: entropy and mutual-information scaling, tripartite diagnostics, dynamical exponent and finite-size reasoning, limits of conformal and numerical conclusions, all-to-all models, quantum trees, and Landau–Ginzburg descriptions.
+
+**§4.2 Structured monitored circuits** maps to @sec-structured-monitored. Topics are measurement-only entanglement; strong trajectory symmetry; Ising/spin-glass and cluster-state/SPT examples; charge sharpening inside volume-law entanglement; topological order and toric-code logical information; Gaussian fermion monitoring, covariance updates, purification bounds and non-volume-law regimes. A separately marked later fermion sigma-model result illustrates the sensitivity to ensemble and symmetry class.
+
+**§4.2.1 Spacetime duality** maps to @sec-sm-spacetime and @sec-sm-dual-scaling: rotated gate tensors, the identity-to-entangled-projector example, selected versus Born-sampled outcomes, teleportation and experimental preparation, boundary dissipation, temporal-to-spatial entropy scaling, fractal/logarithmic/volume-law states, and subleading boundary/polymer contributions.
+
+## Experiments and outlook
+
+**§5 Experiments** maps to @sec-experiments: random-circuit sampling, tomography, two-copy partial SWAP, randomized-measurement estimators, ancilla interferometry and OTOCs, toric-code preparation and topological entropy, time-crystal diagnostics, reference-qubit protocols, trapped-ion and superconducting monitored experiments, decoding, and the postselection barrier. The 2023 duality experiment is explicitly identified as a post-review example.
+
+**§6 Outlook** maps to @sec-outlook: feedback and its relation to state preparation and error correction, mixed-state monitoring with inaccessible environments, experimental access to conditional observables, stabilizer and replica approaches to criticality, rigorous stability questions, extension to Hamiltonians, benchmarking, and periodically generated quantum codes. Historical questions are not presented as a current exhaustive list of unsolved problems.
+
+## Material added for independent learning
+
+The book adds the linear-algebra foundations, explicit entropy and gate calculations, worked Haar and covariance manipulations, derivation of measurement estimators, solved exercises, and the Julia laboratory in @sec-laboratory. Original figure generators, simulation seeds, raw CSV, physics checks, and build instructions are included in the source repository. These additions are intended to make the review's ideas accessible without requiring the reader to reconstruct its implicit steps from other papers.
+

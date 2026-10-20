@@ -27,6 +27,8 @@ The PDF is `_site/random-quantum-circuits.pdf` and is linked from the book
 sidebar. Physics macros are kept equivalent in `assets/macros.sty` and
 `assets/mathjax-config.html`. Citation metadata is in
 `assets/bibliography.bib`; the `refs-*.bib` files preserve authoring provenance.
+The pre-render hook assembles those fragments and checks source references.
+Edit a fragment rather than the generated combined bibliography.
 
 ## Reproduce the numerical figures
 
@@ -64,4 +66,3 @@ in `FIGURE_CREDITS.md`. No review or third-party paper PDFs are redistributed.
 
 Book text and original figures: CC BY 4.0. Code: MIT. See `LICENSE` for
 details and the separately licensed citation style.
-

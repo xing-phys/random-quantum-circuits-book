@@ -1,0 +1,86 @@
+# Questions to carry forward {#sec-outlook}
+
+Random circuits are useful because they let us separate a few physical principles from the microscopic details of a particular material. Locality and unitarity lead to information propagation and entanglement growth. Conserved densities add slow modes. A measurement record changes what information is accessible and which state should be assigned. Structure can preserve order, simplify simulation, or change the effective statistical mechanics.
+
+The review closes with a research agenda [@fisher2023]. We develop its questions here as **questions posed in that review**, without claiming that every one remains open in the same form today. Resolving their current status would require a separate, up-to-date literature survey. The purpose is to show how the ideas of the book turn broad interests into precise physical problems.
+
+## Feedback: the record can change the future
+
+Until now, most protocols specify future gates independently of past outcomes. Feedback instead lets a classical record select a later operation. The unconditional channel for one measurement-and-feedback step is
+
+$$
+\mathcal F(\rho)=\sum_m U_m K_m\rho K_m^\dagger U_m^\dagger,
+\qquad \sum_mK_m^\dagger K_m=I.
+$$ {#eq-outlook-feedback}
+
+Here $K_m$ describes the measurement and $U_m$ is the outcome-dependent correction. In general this channel differs from a measurement followed by a fixed unitary. If the control depends on the full earlier record, the system state alone need not have a Markovian update; a larger description including the controller's memory does.
+
+An elementary example exposes the resource. Measure $Z$ on a qubit and apply $X$ only after outcome one. Both outcomes end in $\ket0$, so the qubit is reset. This map can reduce its entropy because the apparatus and record carry away information. It is not a unitary operation on the qubit alone. It also fails completely as a protocol for protecting an *unknown* qubit: measuring its logical $Z$ destroys the coherence we intended to save.
+
+Error correction avoids that mistake by measuring **syndromes**. For the three-qubit repetition code, encode $\alpha\ket0+\beta\ket1$ as $\alpha\ket{000}+\beta\ket{111}$. The commuting checks $Z_1Z_2$ and $Z_2Z_3$ have eigenvalues independent of $\alpha,\beta$ within the code. A single $X$ error changes a distinct pair of syndrome signs, so it can be located and corrected without learning the logical amplitudes. This code protects against one bit flip, not arbitrary qubit noise; phase errors illustrate why complete quantum protection needs more structure.
+
+This simple example separates three aims. Resetting or cooling prepares a chosen state. Stabilizing a phase preserves a pattern of long-range order across a family of states. Quantum memory preserves an unknown encoded state, including its entanglement with an external reference. The last requirement is substantially stronger. A protocol that stabilizes a magnetization need not protect quantum coherence.
+
+The research questions concern which measurements and feedback rules can stabilize useful many-body phases, how much record processing they need, and how robustly they act under realistic noise and imperfect detection. A precise model must specify the controller's spatial range and latency; instantaneous global feedback and local delayed feedback are different physical resources.
+
+## From a monitored pure state to a noisy mixed state
+
+If every environment outcome is accessible and measured efficiently, the conditional state can remain pure. If part of the environment is ignored, it is generally mixed. One representation is
+
+$$
+\rho_{\mathbf m}=
+\frac{\sum_{\mathbf e}K_{\mathbf m,\mathbf e}\rho_0
+K_{\mathbf m,\mathbf e}^{\dagger}}
+{\operatorname{Tr}\sum_{\mathbf e}K_{\mathbf m,\mathbf e}\rho_0
+K_{\mathbf m,\mathbf e}^{\dagger}},
+$$ {#eq-outlook-hidden-record}
+
+where $\mathbf m$ is the retained record and $\mathbf e$ the unobserved one. The distinction is operational: the observer conditions on $\mathbf m$, not on an imaginary record they never received.
+
+Consider a Bell pair dephased with probability $\epsilon$ on one side. Its state is
+
+$$
+\rho=(1-\epsilon)\ket{\Phi^+}\bra{\Phi^+}
++\epsilon\ket{\Phi^-}\bra{\Phi^-}.
+$$
+
+Either individual qubit is still $I/2$, so its entropy is $\ln2$ for every $\epsilon$. At $\epsilon=1/2$, however, the joint state is the separable mixture of $\ket{00}$ and $\ket{11}$. Subsystem entropy alone misses the destruction of entanglement. If the phase-flip record were known, one could correct every event and recover the Bell state. The same coupling therefore has different consequences depending on whether its information is accessible.
+
+The review's question about the interplay of monitoring and dissipation asks for phases and transitions defined with this information structure included. Mutual information, negativity, purification, and reference-recovery fidelity can distinguish behaviors that an entropy density cannot. In replica descriptions, unobserved noise may change or explicitly break symmetries that protected an ideal transition. Whether a transition survives is a model-dependent question about its order parameter and the perturbation, not an automatic consequence of small error rates.
+
+## Can criticality be understood without uncontrolled continuation?
+
+Integer replica numbers convert entropy moments into local permutation models. The physical quantities often require limits such as $n\to1$, an additional replica number tending to zero, or a Born-weighted total replica number tending to one. The combinatorics are meaningful at each integer, but an arbitrary analytic continuation is not guaranteed to identify the physical theory.
+
+One path forward is to find observables with direct probabilistic or algebraic descriptions: stabilizer ranks, reference information, covariance matrices, or exactly solvable transfer matrices. Another is to identify a continuum theory whose operators and symmetries can be checked against more than one observable. A convincing theory should account for scaling dimensions, geometry dependence, and disorder fluctuations, as well as one fitted exponent.
+
+In Clifford monitoring, the stabilizer strings are a particularly concrete bridge. Their growth, recombination, and removal determine entropies through rank formulas, but a closed stochastic description for their relevant collective variables is not generally as simple as the unmonitored endpoint random walk. Continuous physical symmetries add further slow degrees of freedom and allow transitions inside a single entanglement-scaling regime. These are central reasons that one numerical entropy collapse is not a full explanation of a universality class.
+
+Rigorous stability is another distinct target. To prove a volume-law memory phase, one would want a size-independent interval of measurement rates and a bound showing that nonzero information survives for sufficiently long times as $L$ grows. A long but finite simulation, a favorable large-$q$ expansion, and a proof with explicit error bounds provide different kinds of evidence. Statements should say which one has actually been supplied.
+
+## Returning to Hamiltonians
+
+A circuit with independent gates at every time is deliberately simpler than a time-independent Hamiltonian. Reusing microscopic interactions introduces temporal correlations. A fixed Hamiltonian also conserves energy; a generic independently resampled circuit does not. To transfer an insight, identify the physical structure that supports it.
+
+For example, a membrane is a coarse-grained description of entropy production subject to locality and equilibrium constraints. Its existence need not require literal gate randomness, but its tension and fluctuations depend on the dynamics. A charge-conserving circuit gives a controlled example of slow density diffusion, but a Hamiltonian with momentum conservation, integrability, or anomalous transport can have additional modes and different exponents. KPZ entanglement fluctuations in a noisy one-dimensional circuit should not be asserted without qualification for every translation-invariant Hamiltonian.
+
+A productive comparison fixes the observable, initial state, geometry, conservation laws, and time convention, then tests which predictions survive: the leading growth rate, front shape, late-time tails, finite-size corrections, or higher moments. Agreement in one does not imply agreement in all of them.
+
+## Dynamic codes and experimentally accessible diagnostics
+
+The monitored entangling phase resembles a dynamically generated quantum code because local observations fail to reveal information stored nonlocally. Turning that analogy into a practical memory additionally requires encoding, decoding, noise tolerance, and feasible measurement schedules. A positive information-theoretic code rate alone does not supply an efficient decoder.
+
+The review points to periodically measured constructions with dynamically generated logical qubits [@hastings2021]. The stabilizer constraints vary in time: information is transported through a sequence of measured codes rather than held in the simultaneous eigenspace of one fixed set of checks. The measurement schedule is part of the code. Fault tolerance requires a spacetime account of both data errors and faulty syndrome measurements.
+
+For benchmarking, a useful task needs an accessible signal and a meaningful classical comparison. Reference-qubit diagnostics and spacetime duality show how to ask less than full trajectory tomography while retaining sensitivity to many-body information. Their limits are also instructive: a decoder may itself be expensive, a dual circuit may realize a different record weighting, and noise can suppress a signal as size grows. The goal is an observable whose interpretation remains controlled at the scale where the many-body physics becomes interesting.
+
+## Three projects after this course
+
+**A derivation project.** Starting from the exact Haar twirl, derive the transfer matrix for an interval purity with two domain walls. Check it against direct two- and four-site simulations, including boundary and parity offsets. Record where wall interaction or finite-size saturation enters. This produces a reusable derivation note rather than another unsupported growth-rate fit.
+
+**A numerical project.** Extend the Julia laboratory to a charge-conserving gate ensemble. Use independent Haar blocks in the two-site charge sectors, compare density relaxation with an operator front, and distinguish the charge diffusion constant from front broadening. Test initial states with fixed charge and charge uncertainty separately.
+
+**A measurement project.** For a small monitored circuit, retain the exact classical record distribution and compare conditional entropies, pooled-state entropies, and a decoded reference signal. Determine the number of shots required by direct postselection and by a record-aware estimator for a stated accuracy. This makes the experimental cost part of the physical question.
+
+For any of these projects, preserve the ensemble definition, derivation, assumptions, and failed consistency checks alongside the successful result. Those details are often the most reusable part of a research calculation.
+

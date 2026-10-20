@@ -1,0 +1,361 @@
+# Quantum states, entanglement, and elementary operations {#sec-foundations}
+
+The central object in a random circuit is an evolving many-body quantum state. Before asking how rapidly it becomes complicated, we need a precise language for its correlations. This chapter develops that language from finite-dimensional linear algebra. It expands the prerequisites in Sections 2.1 and 2.2 of the review [@fisher2023]. Every calculation here is exact unless an approximation is explicitly identified.
+
+The local Hilbert-space dimension is $q$: a qubit has $q=2$, while a *qudit* has any integer $q\geq2$. All logarithms are natural. Thus a maximally mixed qubit has entropy $\ln2$, and dividing an entropy by $\ln2$ expresses it in bits.
+
+## Tensor products and pure states
+
+A single qudit has an orthonormal basis $\{\ket{a}:a=0,\ldots,q-1\}$. A chain of $L$ qudits has Hilbert space
+
+$$
+\mathcal H=\bigotimes_{x=1}^{L}\mathbb C^q,
+\qquad \dim\mathcal H=q^L.
+$$ {#eq-fnd-hilbert}
+
+A normalized pure state is a vector
+
+$$
+\ket{\psi}=\sum_{a_1,\ldots,a_L}
+\psi_{a_1\cdots a_L}\ket{a_1}\otimes\cdots\otimes\ket{a_L},
+\qquad \sum_{a_1,\ldots,a_L}|\psi_{a_1\cdots a_L}|^2=1.
+$$ {#eq-fnd-state}
+
+The tensor-product structure matters physically. It identifies which operations are local and which measurements can be made on a subsystem. An arbitrary change of basis on the full $q^L$-dimensional space can erase this structure; a product of on-site changes of basis preserves it.
+
+For a bipartition into a region $A$ and its complement $\bar A$, choose bases $\ket a_A$ and $\ket b_{\bar A}$. The amplitudes form a rectangular matrix:
+
+$$
+\ket\psi=\sum_{a=1}^{D_A}\sum_{b=1}^{D_{\bar A}}
+M_{ab}\ket a_A\ket b_{\bar A}.
+$$ {#eq-fnd-amplitude-matrix}
+
+A *product state across this bipartition* has $M_{ab}=u_a v_b$. A state that cannot be written this way is entangled across the partition. Being a product across one partition does not imply being a product across every partition.
+
+## Density matrices and the partial trace
+
+The density matrix of a pure state is $\rho=\ket\psi\bra\psi$. More generally, classical uncertainty about a preparation is described by
+
+$$
+\rho=\sum_j p_j\ket{\psi_j}\bra{\psi_j},
+\qquad p_j\geq0,\quad \sum_jp_j=1.
+$$ {#eq-fnd-density-mixture}
+
+The defining properties are $\rho^\dagger=\rho$, $\rho\geq0$, and $\tr\rho=1$. Conversely, a matrix with these properties is a possible density matrix. The decomposition in @eq-fnd-density-mixture is generally not unique. For example, $I/2$ is an equal mixture of the two $Z$ eigenstates, and also an equal mixture of the two $X$ eigenstates. A density matrix does not specify which of these preparation procedures was used.
+
+An observable $O$ has mean $\langle O\rangle=\tr(\rho O)$. If it acts only in $A$, it has the form $O_A\otimes I_{\bar A}$. Define the reduced density matrix by
+
+$$
+\rho_A=\tr_{\bar A}\rho,
+\qquad (\rho_A)_{aa'}=\sum_b\rho_{ab,a'b}.
+$$ {#eq-fnd-partial-trace}
+
+This definition guarantees
+
+$$
+\tr\bigl[\rho(O_A\otimes I_{\bar A})\bigr]
+=\tr_A(\rho_AO_A).
+$$ {#eq-fnd-local-expectation}
+
+Thus $\rho_A$ contains exactly the information required for measurements restricted to $A$. The trace over $\bar A$ is not a physical operation that must be performed on the apparatus. It is a way to restrict which questions are being asked.
+
+For a pure bipartite state with amplitude matrix $M$, direct substitution gives $\rho_A=MM^\dagger$ and $(\rho_{\bar A})_{bb'}=\sum_aM_{ab}M_{ab'}^*$. Although the full state is pure, either reduced state can be mixed. This local mixedness is the simplest signature of bipartite entanglement.
+
+The *purity* is
+
+$$
+P(\rho)=\tr\rho^2.
+$$ {#eq-fnd-purity}
+
+If the eigenvalues are $\lambda_i\geq0$, then $\sum_i\lambda_i=1$ and $P=\sum_i\lambda_i^2\leq1$. Equality holds exactly when one eigenvalue is one and the rest vanish: the state is pure. In dimension $D$, Cauchy–Schwarz gives $P\geq1/D$, with equality for $I_D/D$.
+
+::: {.callout-note title="Global purity and local mixedness"}
+The Bell state $\ket{\Phi^+}=(\ket{00}+\ket{11})/\sqrt2$ has $\tr\rho^2=1$, while each qubit has $\rho_1=\rho_2=I/2$ and purity $1/2$. Local uncertainty does not require uncertainty about the global wavefunction.
+:::
+
+## Deriving the Schmidt decomposition
+
+Apply the singular-value decomposition to the amplitude matrix:
+
+$$
+M=U\Sigma V^\dagger,
+\qquad \Sigma_{ij}=s_i\delta_{ij},\quad s_i\geq0.
+$$
+
+Define $\ket{u_i}=\sum_aU_{ai}\ket a$ and $\ket{v_i}=\sum_bV_{bi}^*\ket b$. The complex conjugation in the second definition follows from $V^\dagger_{ib}=V_{bi}^*$. We obtain
+
+$$
+\ket\psi=\sum_{i=1}^{r}\sqrt{\lambda_i}\,
+\ket{u_i}_A\ket{v_i}_{\bar A},
+\qquad \lambda_i=s_i^2,\qquad
+\sum_i\lambda_i=1.
+$$ {#eq-fnd-schmidt}
+
+The vectors on each side form an orthonormal set. The number $r$ of nonzero singular values is the *Schmidt rank*, with $r\leq\min(D_A,D_{\bar A})$. Tracing out either side leaves
+
+$$
+\rho_A=\sum_i\lambda_i\ket{u_i}\bra{u_i},
+\qquad
+\rho_{\bar A}=\sum_i\lambda_i\ket{v_i}\bra{v_i}.
+$$ {#eq-fnd-schmidt-reduced}
+
+The two reduced matrices therefore have the same nonzero spectrum, even when their dimensions differ. In particular, they have equal entanglement entropies. A pure state is a product state across the cut exactly when $r=1$.
+
+Under $U_A\otimes U_{\bar A}$, the Schmidt vectors rotate but the $\lambda_i$ do not change. Entanglement is invariant under arbitrary unitaries acting separately on the two regions, including highly complicated operations within either region. Only an operation coupling the regions can change the Schmidt spectrum under unitary dynamics.
+
+### A continuously tunable example
+
+For
+
+$$
+\ket{\psi_\theta}=\cos\theta\ket{00}+\sin\theta\ket{11},
+\qquad 0\leq\theta\leq\frac\pi4,
+$$ {#eq-fnd-tunable-state}
+
+the Schmidt eigenvalues are $\cos^2\theta$ and $\sin^2\theta$. At $\theta=0$ the state is unentangled; at $\theta=\pi/4$ it is maximally entangled. Measuring qubit one in the computational basis gives outcome zero with probability $\cos^2\theta$ and outcome one with probability $\sin^2\theta$. Conditional on the outcome, qubit two has the same computational-basis value. Other measurement bases reveal correlations that a classical mixture of $\ket{00}$ and $\ket{11}$ does not share.
+
+## Entropies and what they measure
+
+The von Neumann entropy and the Rényi entropies are
+
+$$
+S(\rho)=-\tr(\rho\ln\rho)
+=-\sum_i\lambda_i\ln\lambda_i,
+$$ {#eq-fnd-von-neumann}
+
+$$
+S_n(\rho)=\frac{1}{1-n}\ln\tr\rho^n
+=\frac{1}{1-n}\ln\sum_i\lambda_i^n,
+\qquad n>0,\quad n\neq1.
+$$ {#eq-fnd-renyi}
+
+Use $0\ln0=0$ by continuity. Expanding $\lambda_i^n$ around $n=1$ gives $\sum_i\lambda_i^n=1+(n-1)\sum_i\lambda_i\ln\lambda_i+O((n-1)^2)$. This proves $\lim_{n\to1}S_n=S$.
+
+For a globally pure state, $S_A=S(\rho_A)$ is the *entanglement entropy* across $A|\bar A$. For a globally mixed state, $S(\rho_A)$ is still an entropy but includes classical uncertainty and is not by itself a measure of entanglement. For instance, $I_A/D_A\otimes I_{\bar A}/D_{\bar A}$ has positive subsystem entropies and no correlations at all.
+
+Some useful special cases are
+
+$$
+S_0=\ln r,\qquad
+S_2=-\ln P,\qquad
+S_\infty=-\ln\lambda_{\max}.
+$$ {#eq-fnd-special-entropies}
+
+Here $S_0$ means the $n\to0^+$ limit, so it counts nonzero eigenvalues. Rényi entropies decrease as their index increases. For a pure bipartite state,
+
+$$
+0\leq S_\infty\leq S_2\leq S
+\leq S_0\leq\ln\min(D_A,D_{\bar A}).
+$$ {#eq-fnd-entropy-bounds}
+
+To understand the upper bound, fix a rank $r$ and maximize $-\sum_i\lambda_i\ln\lambda_i$ subject to $\sum_i\lambda_i=1$. A Lagrange multiplier gives $\lambda_i=1/r$ and $S=\ln r$. The same uniform spectrum maximizes every Rényi entropy. The minimum zero is attained by a pure reduced state.
+
+The ordering also has a short derivation. Set $f(n)=\ln\sum_{i:\lambda_i>0}\lambda_i^n$. Its second derivative is the variance of $\ln\lambda_i$ in the normalized distribution proportional to $\lambda_i^n$, so $f''(n)\geq0$. The slope of a secant of a convex function from the fixed point $n=1$ increases with $n$. Since $f(1)=0$ and $S_n=-[f(n)-f(1)]/(n-1)$, $S_n$ decreases with $n$.
+
+For @eq-fnd-tunable-state,
+
+$$
+S_A=-\cos^2\theta\ln\cos^2\theta
+-\sin^2\theta\ln\sin^2\theta,
+\qquad
+S_{2,A}=-\ln(\cos^4\theta+\sin^4\theta).
+$$ {#eq-fnd-tunable-entropies}
+
+They agree at the product and maximally entangled limits, and differ between them. Consequently, a growth law derived for $S_2$ does not automatically give the growth law of $S$.
+
+The entropy $S_A$ equals the Shannon entropy of the Schmidt probabilities $\lambda_i$. This does not mean the pure state is a classical probabilistic choice of Schmidt product states. The superposition in @eq-fnd-schmidt contains coherence, visible to joint measurements across the two regions. Tracing out one region removes access to that coherence.
+
+### Area laws, volume laws, and a qualification
+
+For a region containing $\ell$ qudits, $S_A\leq\ell\ln q$. A *volume law* means that the leading entropy scales as the number of sites, $S_A\simeq s\ell$ with $s>0$. An *area law* means that the leading entropy scales with the size of the boundary. In one dimension a connected interval has two endpoints, so an area law usually means $S_A=O(1)$ as $\ell$ grows. Critical states can have intermediate scaling, such as $S_A\propto\ln\ell$.
+
+The distinction concerns a family of states in a large-system limit. A single finite entropy value cannot establish a phase. Boundary conditions and whether the subsystem is smaller or larger than its complement also matter: a globally pure state obeys $S_A=S_{\bar A}$, so an entropy cannot keep growing beyond the entropy capacity of the smaller side.
+
+## Mutual information and multipartite correlations
+
+For disjoint regions $A$ and $B$, define the von Neumann mutual information
+
+$$
+I(A:B)=S_A+S_B-S_{AB}.
+$$ {#eq-fnd-mi}
+
+It measures total correlations, including both classical and quantum correlations. Its positivity is the entropy inequality $S_{AB}\leq S_A+S_B$. More precisely,
+
+$$
+I(A:B)=D(\rho_{AB}\Vert\rho_A\otimes\rho_B),
+\qquad
+D(\rho\Vert\sigma)=\tr[\rho(\ln\rho-\ln\sigma)].
+$$ {#eq-fnd-mi-relative}
+
+The nonnegativity of quantum relative entropy implies $I\geq0$, with equality exactly when $\rho_{AB}=\rho_A\otimes\rho_B$. This is stronger than the vanishing of the correlation of one chosen pair of observables. An uncorrelated reduced state factorizes the expectation of *every* product $O_AO_B$.
+
+For completeness, positivity follows from scalar inequalities. Diagonalize $\rho=\sum_i p_i\ket i\bra i$ and $\sigma=\sum_jq_j\ket j\bra j$, and put $T_{ij}=|\langle i|j\rangle|^2$. The matrix $T$ has row and column sums one. Concavity of the logarithm gives $\sum_jT_{ij}\ln q_j\leq\ln s_i$, where $s_i=\sum_jT_{ij}q_j$ and $\sum_i s_i=1$. Therefore $D(\rho\Vert\sigma)\geq\sum_i p_i\ln(p_i/s_i)\geq0$; the final step follows from $\ln x\leq x-1$. Zero eigenvalues are handled by restriction to the support and a limit; if $\sigma$ vanishes on a direction carrying weight in $\rho$, the relative entropy is infinite. Equality in these inequalities gives $\rho=\sigma$.
+
+When $AB$ is globally pure, $S_{AB}=0$ and $I(A:B)=2S_A$. The factor two is important. For a Bell pair, $I=2\ln2$. In contrast, the separable correlated state
+
+$$
+\rho_{AB}^{\mathrm{cl}}=
+\frac12\ket{00}\bra{00}+\frac12\ket{11}\bra{11}
+$$ {#eq-fnd-classical-correlation}
+
+has $S_A=S_B=S_{AB}=\ln2$ and $I=\ln2$. It contains a shared random bit but no bipartite entanglement.
+
+Strong subadditivity takes the form
+
+$$
+I(A:C\mid B)=S_{AB}+S_{BC}-S_B-S_{ABC}\geq0.
+$$ {#eq-fnd-strong-subadditivity}
+
+This conditional mutual information is useful when information is encoded in correlations among many regions. We will use entropy inequalities as established finite-dimensional results; their general proofs require matrix inequalities beyond the linear-algebra prerequisites of this chapter.
+
+::: {.callout-warning title="A Rényi substitution can lose positivity"}
+The expression $S_{n,A}+S_{n,B}-S_{n,AB}$ is sometimes called a Rényi mutual information, but it does not inherit all von Neumann properties. Consider a diagonal two-bit state with probabilities $p_{00}=1/2$, $p_{01}=p_{10}=1/4$, and $p_{11}=0$. Each marginal has purity $5/8$, while the joint purity is $3/8$. The expression at $n=2$ is $\ln[(3/8)/(5/8)^2]=\ln(24/25)<0$. Unless stated otherwise, mutual information in this book means @eq-fnd-mi.
+:::
+
+## Why entanglement matters for simulation
+
+Suppose the Schmidt eigenvalues are sorted in decreasing order. Keeping only the first $\chi$ terms produces an unnormalized approximation $\ket{\psi_\chi^{\mathrm{un}}}$. Its squared error is
+
+$$
+\bigl\|\ket\psi-\ket{\psi_\chi^{\mathrm{un}}}\bigr\|^2
+=\epsilon_\chi,\qquad
+\epsilon_\chi=\sum_{i>\chi}\lambda_i.
+$$ {#eq-fnd-schmidt-error}
+
+After normalization, the retained state has squared overlap $1-\epsilon_\chi$ with the exact state. This follows immediately from orthogonality of the Schmidt terms. The singular-value decomposition also proves that this truncation is optimal among approximations of Schmidt rank at most $\chi$ in the corresponding matrix norm.
+
+Repeated Schmidt decompositions along a chain lead to a *matrix product state* (MPS):
+
+$$
+\psi_{a_1\cdots a_L}
+=\sum_{\alpha_1,\ldots,\alpha_{L-1}}
+A^{a_1}_{\alpha_1}
+A^{a_2}_{\alpha_1\alpha_2}\cdots
+A^{a_L}_{\alpha_{L-1}}.
+$$ {#eq-fnd-mps}
+
+The internal indices have dimensions at most $\chi$, called the bond dimension. An exact MPS has Schmidt rank at most $\chi$ at each cut, and hence $S_A\leq\ln\chi$ at each such cut. A volume-law entropy across the middle therefore requires exponentially large $\chi$ for an exact MPS. A bounded bond dimension needs only $O(Lq\chi^2)$ parameters, which explains the usefulness of tensor-network representations [@fnd-vidal2003].
+
+There are two qualifications. First, the accuracy of truncation is controlled by the entire Schmidt tail $\epsilon_\chi$, not by one entropy alone. Second, large entanglement does not rule out every efficient classical representation. Stabilizer states can have volume-law entanglement and still admit an efficient description by Pauli operators. Entropy is a guide to the difficulty of particular simulation methods, not a general complexity theorem.
+
+## One-qubit operations: rotations and observations
+
+In the computational basis $\ket0,\ket1$, the Pauli matrices are
+
+$$
+X=\begin{pmatrix}0&1\\1&0\end{pmatrix},\quad
+Y=\begin{pmatrix}0&-i\\i&0\end{pmatrix},\quad
+Z=\begin{pmatrix}1&0\\0&-1\end{pmatrix}.
+$$ {#eq-fnd-pauli}
+
+They obey $X^2=Y^2=Z^2=I$, $XY=iZ$, and cyclic permutations. Along with $I$, they form an orthogonal operator basis under $\tr(A^\dagger B)$. A Hermitian operator is
+
+$$
+O=c_I I+c_XX+c_YY+c_ZZ,
+\qquad c_\mu=\frac12\tr(\sigma_\mu O),
+$$ {#eq-fnd-pauli-expansion}
+
+with real coefficients. A qubit density matrix can therefore be written as
+
+$$
+\rho=\frac12(I+\mathbf r\cdot\boldsymbol\sigma),
+\qquad |\mathbf r|\leq1,
+\qquad \tr\rho^2=\frac{1+|\mathbf r|^2}{2}.
+$$ {#eq-fnd-bloch}
+
+The vector $\mathbf r=(\langle X\rangle,\langle Y\rangle,\langle Z\rangle)$ is the Bloch vector. Pure states lie on the unit sphere; mixed states lie inside it. A unitary $u=\exp(-i\theta\mathbf n\cdot\boldsymbol\sigma/2)$ rotates the Bloch vector by angle $\theta$ about the unit vector $\mathbf n$. An overall phase of $u$ has no effect on $\rho$.
+
+A projective $Z$ measurement uses projectors
+
+$$
+P_0=\frac{I+Z}{2}=\ket0\bra0,\qquad
+P_1=\frac{I-Z}{2}=\ket1\bra1.
+$$ {#eq-fnd-z-projectors}
+
+Outcome $m$ occurs with probability $p_m=\tr(P_m\rho)$, and the conditional state is $P_m\rho P_m/p_m$ when $p_m>0$. For a pure state, the update is $\ket\psi\mapsto P_m\ket\psi/\sqrt{p_m}$. Observing the outcome sends a pure qubit to a pole of the Bloch sphere. If the outcome is discarded, the map is instead $\rho\mapsto P_0\rho P_0+P_1\rho P_1$: the transverse Bloch components disappear, while $r_z$ is unchanged.
+
+## Two qubits: creating and destroying entanglement
+
+Let $\ket\pm=(\ket0\pm\ket1)/\sqrt2$. The Hadamard gate $H=(X+Z)/\sqrt2$ sends $\ket0$ to $\ket+$. The controlled-NOT gate acts as $\operatorname{CNOT}\ket{a,b}=\ket{a,b\oplus a}$, where $\oplus$ is addition modulo two. Thus
+
+$$
+\ket{00}\xrightarrow{H\otimes I}\ket{+0}
+\xrightarrow{\operatorname{CNOT}}
+\frac{\ket{00}+\ket{11}}{\sqrt2}.
+$$ {#eq-fnd-bell-preparation}
+
+The first operation changes a local basis without changing entanglement. The second couples the two qubits and creates one Bell pair. Measuring the first qubit in the $Z$ basis subsequently yields $\ket{00}$ or $\ket{11}$, each with probability $1/2$. Each conditional state is pure and unentangled. If the result is forgotten, the state is @eq-fnd-classical-correlation.
+
+The example in the review uses the controlled-$Z$ gate,
+
+$$
+\operatorname{CZ}=\operatorname{diag}(1,1,1,-1)
+=\exp\left[\frac{i\pi}{4}(I-Z_1)(I-Z_2)\right],
+$$ {#eq-fnd-cz}
+
+where $Z_1=Z\otimes I$ and $Z_2=I\otimes Z$. Acting on $\ket{++}$ gives a two-qubit graph state,
+
+$$
+\ket G=\frac12(\ket{00}+\ket{01}+\ket{10}-\ket{11})
+=\frac{\ket{+0}+\ket{-1}}{\sqrt2}.
+$$ {#eq-fnd-graph-state}
+
+The final form is already a Schmidt decomposition: either qubit has reduced state $I/2$. An $X_1$ measurement gives outcome $+1$ or $-1$ with equal probabilities, followed respectively by the product states $\ket{+0}$ and $\ket{-1}$. Again the entropy in each pure trajectory is zero, whereas the outcome-averaged state has entropy $\ln2$.
+
+### The same calculation with stabilizers
+
+The product state $\ket{++}$ is the simultaneous $+1$ eigenstate of $X_1$ and $X_2$. Conjugating the operators under the gate gives
+
+$$
+\operatorname{CZ}X_1\operatorname{CZ}^\dagger=X_1Z_2,
+\qquad
+\operatorname{CZ}X_2\operatorname{CZ}^\dagger=Z_1X_2.
+$$ {#eq-fnd-cz-stabilizers}
+
+Consequently, $X_1Z_2\ket G=Z_1X_2\ket G=\ket G$. The two operators commute, square to the identity, and have a one-dimensional common $+1$ eigenspace. Equivalently,
+
+$$
+\ket G\bra G=\frac14(I+X_1Z_2)(I+Z_1X_2).
+$$ {#eq-fnd-stabilizer-projector}
+
+Tracing out either qubit leaves $I/2$, because every nonidentity stabilizer term has a nonidentity Pauli on the traced qubit. The state is fully specified by two Pauli products instead of four complex amplitudes.
+
+A *Clifford gate* maps every Pauli product to a Pauli product, up to phase, under conjugation. CZ, CNOT, and Hadamard are examples. A generic unitary maps a Pauli product to a linear combination of many Pauli products. This distinction becomes essential when we discuss classically simulable circuits.
+
+CZ also illustrates why entanglement production depends on the input. It leaves each computational-basis product vector unentangled, even though it maximally entangles $\ket{++}$. A Haar-random two-qudit gate typically entangles any particular fixed product input; this statistical statement is not a claim that every input is entangled by every gate.
+
+### What a local measurement guarantees
+
+For an arbitrary pure state, expand the measured site $i$ as
+
+$$
+\ket\psi=\sum_{a=0}^{q-1}\ket a_i\ket{\eta_a}_{\mathrm{rest}},
+$$
+
+where the $\ket{\eta_a}$ need not be normalized or orthogonal. A rank-one measurement with outcome $a$ produces $\ket a_i\ket{\eta_a}/\|\eta_a\|$. Thus the measured site is exactly disentangled from all other sites in that conditional state. Entanglement *among the unmeasured sites* can remain, or even increase for selected outcomes. A higher-rank projector does not generally disentangle the entire measured subsystem.
+
+This observation explains why unitary gates and measurements compete in many-body circuits. It does not yet imply a transition or say how much total entanglement one local measurement removes. Those are collective questions.
+
+## Exercises with answers and hints
+
+1. **Reduced matrix from amplitudes.** For $\ket\psi=(\ket{00}+\ket{01}+\ket{10})/\sqrt3$, compute $\rho_1$, its eigenvalues, and $S_2$.
+
+   *Answer:* $\rho_1=\frac13\begin{pmatrix}2&1\\1&1\end{pmatrix}$, with eigenvalues $(3\pm\sqrt5)/6$. Its purity is $7/9$, so $S_2=\ln(9/7)$.
+
+2. **A phase invisible locally.** Compare $\ket{\Phi^+}$ and $\ket{\Phi^-}=(\ket{00}-\ket{11})/\sqrt2$. Show that no measurement restricted to one qubit distinguishes them, but $X_1X_2$ does.
+
+   *Answer:* Both one-qubit reduced matrices are $I/2$. The two states have $X_1X_2$ eigenvalues $+1$ and $-1$, respectively. Their difference is encoded in a joint observable.
+
+3. **Multipartite versus pairwise entanglement.** Trace out the third qubit of $(\ket{000}+\ket{111})/\sqrt2$. Find $I(1:2)$. Then measure qubit three in the $X$ basis and find the conditional state of qubits one and two.
+
+   *Answer:* Before the measurement the two-qubit state is @eq-fnd-classical-correlation and $I(1:2)=\ln2$. The measurement prepares $\ket{\Phi^+}$ or $\ket{\Phi^-}$, with the sign known from the record. A local measurement can reveal entanglement between other parties while disentangling the measured party.
+
+4. **Exact versus approximate rank.** A state has Schmidt probabilities $0.97,0.02,0.01$. What is the squared fidelity after keeping one term? What rank is needed for squared fidelity at least $0.99$?
+
+   *Answer:* The best rank-one squared fidelity is $0.97$; keeping two terms gives $0.99$. This is determined directly by cumulative Schmidt weight.
+
+5. **Entropy and a bond-crossing gate.** Let a two-qudit unitary act on one qudit on each side of a cut. Prove that the von Neumann entropy across the cut changes by at most $2\ln q$.
+
+   *Hint:* Write the left side as $A'a$, where $a$ is the affected qudit. The reduced state on $A'$ is unchanged. Before and after the gate, subadditivity and the Araki–Lieb inequality imply $|S(A'a)-S(A')|\leq S(a)\leq\ln q$. Subtract the two bounds. This is an upper bound, not a prediction of the typical rate.
+
+The ingredients are now in place: amplitudes specify the state, reduced density matrices specify local observations, entropies quantify correlations, and gates and measurements change those correlations in distinct ways. The next chapter arranges these elementary operations into spatially local many-body dynamics.

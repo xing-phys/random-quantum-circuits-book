@@ -1,0 +1,7 @@
+# References {.unnumbered}
+
+These sources support the derivations and physical claims in the text. The review by Fisher, Khemani, Nahum, and Vijay provides the organizing backbone; the other entries are cited where their particular results are used. This book is an independent pedagogical exposition, not a reproduction of the review.
+
+::: {#refs}
+:::
+

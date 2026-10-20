@@ -1,0 +1,63 @@
+---
+title: "Before we begin"
+---
+
+::: {.book-intro}
+How can a quantum system become locally featureless while its wavefunction keeps developing rich structure? What changes when we observe it? Random quantum circuits turn these questions into a concrete many-body laboratory.
+:::
+
+This book develops the material of *Random Quantum Circuits* by Matthew P. A. Fisher, Vedika Khemani, Adam Nahum, and Sagar Vijay [@fisher2023] into a course for a beginning graduate student or a senior undergraduate. The review supplies the conceptual backbone: local gates and measurements, quantum–classical mappings, entanglement growth, operator spreading, structured unitary circuits, measurement-induced transitions, structured monitored systems, and experiments. We supply the mathematical bridges, examples, and computational practice needed to follow those ideas without opening the cited papers. The sources remain essential scholarly attribution and pathways for further study.
+
+This is an independent learning companion. It is not written or endorsed by the review's authors. The exposition, derivations, numerical examples, and figures were created for this project, with AI assistance in drafting and verification. All figures are original; their generators and provenance are available in the [figure credits](FIGURE_CREDITS.md). The book's scope follows the review rather than attempting an exhaustive survey of research through 2026. Clearly identified later developments illustrate an experimental realization of a proposal from the review and a refined description of a monitored fermion phase.
+
+## What you need
+
+We assume complex vectors and matrices, eigenvalues, inner products, tensor products at the level of introductory quantum mechanics, and elementary differentiation and probability. The first chapter reintroduces tensor products, partial traces, density matrices, and Schmidt decomposition with explicit calculations. Statistical-mechanics replicas, random matrices, tensor networks, stabilizers, and quantum error correction are developed as they arise. Advanced topics are introduced through their simplest working examples; a complete classification of all models mentioned in the review is beyond a single introductory course.
+
+One useful habit is to separate three different questions throughout your reading:
+
+1. What happens to the state in one circuit realization and one measurement record?
+2. What changes after averaging over gates, measurement locations, or outcomes?
+3. What part of an answer survives at long distances, large system size, or large local dimension?
+
+Confusing these questions causes many apparent paradoxes. An averaged state can be maximally mixed while every individual trajectory is pure. An exactly solvable averaged purity need not give the average entropy. A percolation mapping can be exact in a controlled limit while the finite-qubit transition has different critical behavior.
+
+## A first puzzle: local equilibrium without global mixing
+
+Take two qubits in the state
+
+$$
+\ket{\Phi^+}=\frac{\ket{00}+\ket{11}}{\sqrt{2}}.
+$$
+
+Their joint density matrix has rank one. Either qubit alone has density matrix $I/2$: every local measurement is consistent with a fair, featureless state. The missing local information resides in correlations. Increasing the number of qubits allows a pure state to look thermal on every small region while retaining globally recoverable information.
+
+A random circuit creates such correlations using local operations, one layer at a time. Locality restricts how fast information can travel. Unitarity preserves the total information. Measurement transfers some information to a classical record. Those few ingredients already produce a surprisingly rich theory.
+
+![An original brickwork circuit schematic. Teal rectangles are independent two-site gates; red marks indicate selected local measurements. One horizontal row of gates is one unit of time. Measurement locations here are illustrative.](figs/brickwork){#fig-overview-brickwork width=95%}
+
+## How the course fits together
+
+**Part I** builds the language. We calculate entropies directly, specify ensembles and trajectories, and derive the two-copy Haar integral that changes an entanglement problem into a classical sum over pairings.
+
+**Part II** studies closed dynamics. Minimal cuts and entanglement membranes describe large-scale growth; operator strings explain scrambling and fronts; symmetries, periodic driving, dual unitarity, Clifford dynamics, free fermions, and other structures reveal where the minimal model changes.
+
+**Part III** adds an observer. We derive why local measurements do not necessarily destroy extensive entanglement, relate the entangling phase to information storage, and examine criticality, symmetry, topology, free particles, measurement-only dynamics, and spacetime duality.
+
+**Part IV** puts these tools to work. A Julia laboratory produces exact state-vector data. An experiment chapter derives measurable purity and correlation protocols and explains postselection. The final chapter turns the review's outlook into precise research questions, with its historical context made explicit.
+
+The [notation appendix](notation.qmd) is a compact reference. The [coverage appendix](coverage.qmd) maps each review section and its subsidiary topics to this book. Exercises include solutions or substantial hints, so independent readers can check their reasoning.
+
+## Reading routes
+
+For a first pass, read the foundations and circuits chapters, the first sections of the mapping and entanglement chapters, the operator-spreading chapter, and the monitored chapter. Then do the Julia laboratory. Return to the more detailed replica derivations and structured models after that physical picture is secure.
+
+For a course, a workable twelve-meeting plan is: two meetings on foundations and circuits; two on mappings and membranes; one on operators; two on structured unitaries; two on monitored transitions; one on structured monitoring; one laboratory; and one on experiments and open problems. Each long chapter can also support a slower reading seminar.
+
+## Conventions and the status of results
+
+Unless stated otherwise, logarithms are natural, entropies are in **nats**, the lattice spacing is one, and time counts **one layer** of the brickwork circuit. A pair of alternating layers is one full even–odd period and takes time two. Each site has Hilbert-space dimension $q$; a qubit has $q=2$. A one-dimensional system has $L$ sites. An interval $A$ has $\ell$ sites. In a symmetry-free infinite-temperature state, the equilibrium entropy density is $s_{\mathrm{eq}}=\ln q$.
+
+We distinguish exact identities, controlled limits such as $q\to\infty$, coarse-grained phenomenology, and numerical or conjectural claims in the text. Exact identities can still require assumptions about the ensemble or boundary conditions. A useful check on every formula is to identify those assumptions before applying it.
+
+The website and combined PDF are generated from the same Quarto sources. The sidebar offers search, light and dark modes, source links, and the PDF download. To correct an error, use the issue or edit links; a good report states the chapter, equation or paragraph, and the proposed correction.

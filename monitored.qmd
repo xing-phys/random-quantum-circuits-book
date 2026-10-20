@@ -1,0 +1,432 @@
+# Monitoring, entanglement, and quantum memory {#sec-monitored}
+
+::: {.callout-note title="Learning goals and scope"}
+
+This chapter develops the minimally structured monitored circuits of §4.1 of @fisher2023. You will learn to distinguish a quantum trajectory from an averaged density matrix, derive the effect of a local measurement on entanglement, understand the percolation limit and its limitations, and connect entanglement transitions to purification and quantum error correction. All entropies use natural logarithms. A qudit has Hilbert-space dimension $q$; a qubit therefore carries a maximum entropy $\ln 2$.
+:::
+
+## A record changes the state we should assign {#sec-mon-record}
+
+Take $L$ qudits on a chain. Throughout this book, one time step contains **one layer** of local two-site unitary gates, followed by possible single-site measurements. Independently at each allowed location, perform a measurement with probability $p$. Some literature instead groups two alternating layers into a step, with a separately specified measurement schedule. Converting between those protocols requires checking both the clock and the measurement opportunities. To define a model completely, also specify the unitary ensemble, measurement basis, initial state, boundary conditions, and the point within a step at which observables are evaluated.
+
+For a fixed realization of the gates and measurement locations, let $\boldsymbol m=(m_1,\ldots,m_M)$ denote the measurement record. Its Kraus operator is an ordered product,
+
+$$
+K_{\boldsymbol m}=P_{m_M}U_M\cdots P_{m_2}U_2P_{m_1}U_1.
+$$ {#eq-mon-kraus}
+
+Several gates can be absorbed into each $U_j$. A projective measurement has $P_mP_{m'}=\delta_{mm'}P_m$ and $\sum_mP_m=I$. More general measurements use operators $M_m$ with $\sum_mM_m^\dagger M_m=I$; all normalization arguments below still apply.
+
+Start with a density matrix $\rho_0$ of unit trace. Define
+
+$$
+\widetilde\rho_{\boldsymbol m}=K_{\boldsymbol m}\rho_0K_{\boldsymbol m}^{\dagger},
+\qquad
+p_{\boldsymbol m}=\operatorname{tr}\widetilde\rho_{\boldsymbol m},
+\qquad
+\rho_{\boldsymbol m}=\frac{\widetilde\rho_{\boldsymbol m}}{p_{\boldsymbol m}}.
+$$ {#eq-mon-normalization}
+
+The tilde indicates an **unnormalized** state. The number $p_{\boldsymbol m}$ is the probability of the entire record, including the successive conditional probabilities. Completeness of the measurement at every step implies $\sum_{\boldsymbol m}K_{\boldsymbol m}^\dagger K_{\boldsymbol m}=I$, and hence $\sum_{\boldsymbol m}p_{\boldsymbol m}=1$. Zero-probability records can be omitted. If $\rho_0=|\psi_0\rangle\langle\psi_0|$, each conditional state is pure:
+
+$$
+|\psi_{\boldsymbol m}\rangle=
+\frac{K_{\boldsymbol m}|\psi_0\rangle}{\sqrt{p_{\boldsymbol m}}}.
+$$ {#eq-mon-trajectory}
+
+The map on an unnormalized density matrix is linear. The normalized conditional map is nonlinear because its denominator depends on its input. This elementary normalization is central to the statistical mechanics of monitored circuits.
+
+There are three sources of randomness: gate choices, measurement locations, and outcomes sampled from the Born rule. We write $\mathbb E$ for the first two averages and display the Born-weighted sum when it matters. A typical entropy means, for example,
+
+$$
+\overline{S_A}=\mathbb E\sum_{\boldsymbol m}p_{\boldsymbol m}
+S\!\left(\operatorname{tr}_{\bar A}\rho_{\boldsymbol m}\right).
+$$ {#eq-mon-entropy-average}
+
+An overbar never means that we average the density matrix before taking its entropy.
+
+### A two-qubit calculation
+
+Consider $|\Phi^+\rangle=(|00\rangle+|11\rangle)/\sqrt2$. Measuring $Z_1$ gives outcome $+1$ or $-1$ with probability $1/2$, and conditional output $|00\rangle$ or $|11\rangle$. Both outputs have zero entanglement. If the outcome is unavailable, however, the assigned state is
+
+$$
+\bar\rho=\frac12|00\rangle\langle00|+
+\frac12|11\rangle\langle11|.
+$$
+
+Its one-qubit marginal is $I/2$, with entropy $\ln2$. That entropy is classical uncertainty about the record, rather than entanglement of either output trajectory. In particular,
+
+$$
+\sum_m p_m S(\rho_{A,m})=0,
+\qquad
+S\!\left(\sum_m p_m\rho_{A,m}\right)=\ln2.
+$$
+
+The two operations do not commute. The distinction survives in a many-body system and explains why a transition can be absent from ordinary averaged observables.
+
+## Why an averaged channel can conceal a transition {#sec-mon-channel}
+
+Discarding the record gives the quantum channel
+
+$$
+\bar\rho(t)=\sum_{\boldsymbol m}K_{\boldsymbol m}\rho_0K_{\boldsymbol m}^{\dagger}
+=\sum_{\boldsymbol m}p_{\boldsymbol m}\rho_{\boldsymbol m}.
+$$ {#eq-mon-channel}
+
+At a nonzero monitoring rate, for generic unstructured local circuits with sufficient mixing, this channel relaxes toward the maximally mixed state $I/q^L$. The statement need not hold in the presence of conservation laws, dark states, or special gate choices. At $p=0$, averaging only over the nonexistent outcome record leaves ordinary unitary evolution and does not globally mix a pure input. In the monitored generic setting, $I/q^L$ is a fixed point because the unitary and projective-measurement channels are unital. Mixing removes other stationary components.
+
+For any operator $O$,
+
+$$
+\sum_{\boldsymbol m}p_{\boldsymbol m}\langle O\rangle_{\boldsymbol m}
+=\operatorname{tr}(O\bar\rho).
+$$
+
+Consequently, any quantity linear in $\rho$ has lost the trajectory structure after this averaging. A useful object is instead a squared correlation,
+
+$$
+\mathbb E\sum_{\boldsymbol m}p_{\boldsymbol m}
+\left|\langle O_iO_j\rangle_{\boldsymbol m}\right|^2,
+$$ {#eq-mon-squared-correlation}
+
+or an entropy, mutual information, or reference-system purity. Random signs can cancel in the first moment and survive in the second. These observables describe a distribution of conditioned states.
+
+The same channel can admit different decompositions into Kraus operators, called different **unravelings**. They correspond physically to different measurements of the environment. Thus the entanglement of trajectories is a property of a channel together with its monitoring protocol; it is not a property of the channel alone. In an unobserved open system, a trajectory representation may nevertheless be useful computationally. If typical trajectories admit compact matrix product states, a trajectory simulation can be economical even when the full density matrix is difficult to store.
+
+An area law by itself does not prove that every simulation task is efficient: the entire Schmidt spectrum, sampling, numerical accuracy, and other special structure matter. Conversely, Clifford circuits can have a volume law and remain efficiently simulable by stabilizers. Entanglement gives an important diagnostic of tensor-network difficulty, rather than an unconditional theorem about computational complexity.
+
+## The measurement-induced transition {#sec-mon-transition}
+
+Begin from a product state and evolve until local entanglement observables have reached a stationary distribution. In a one-dimensional generic hybrid circuit, numerical studies find two phases separated by a nonzero critical monitoring rate $p_c$ [@li2018zeno; @skinner2019measurement; @li2019measurement]. For a connected interval of length $\ell$ much smaller than $L$,
+
+$$
+\overline{S_A}\sim
+\begin{cases}
+s(p)\ell+\text{subleading terms},&p<p_c,\\
+\alpha\ln\ell+O(1),&p=p_c,\\
+O(1),&p>p_c.
+\end{cases}
+$$ {#eq-mon-phase-scaling}
+
+Here $0<s(p)\leq\ln q$. In one dimension a region has a fixed number of boundary points, so $O(1)$ is an area law. In $d$ spatial dimensions an area law generally means $S_A=O(|\partial A|)$; it does not mean a constant. Monitoring transitions also occur in higher dimensions, though the one-dimensional logarithmic critical law should not be transferred to them without analysis.
+
+At $p=0$, a generic circuit produces nearly maximally entangled small subsystems. At $p=1$, measuring every site at the end of each time step produces an exact product state at that observation time. Measuring immediately before the next full measurement layer can leave short-range entanglement from the intervening gates, still an area law. At intermediate $p$, neither limiting picture is adequate.
+
+A **phase transition** requires a limiting procedure. A finite system has a smooth crossover, and even its weakly monitored mixed state eventually purifies. One studies increasing $L$ at times long enough to remove initial transients but shorter than exponentially long memory-loss times. The stationary pure-state ensemble and the mixed-state memory problem provide complementary ways to take this limit.
+
+### An apparently persuasive counting argument, and its failure
+
+In one time step only $O(1)$ gates cross an interval boundary, so they can increase $S_A$ by only $O(\ln q)$. Meanwhile there are $O(p\ell)$ measurements inside $A$. If each removed an order-one entropy, any nonzero $p$ would defeat the boundary gates. The observed stable volume law proves that the assumed entropy loss is wrong.
+
+We can identify the relevant quantity exactly. Let the entire $AB$ state be pure, and measure a degree of freedom inside $A$, recording its outcome in a classical register $M$. The state of $B$ before conditioning is unchanged:
+
+$$
+\sum_m p_m\rho_{B,m}=\rho_B.
+$$
+
+After recording the outcome, the joint state is
+
+$$
+\rho_{BM}=\sum_m p_m\rho_{B,m}\otimes|m\rangle\langle m|.
+$$
+
+Because this is block diagonal, $S(BM)=H(M)+\sum_m p_m S(\rho_{B,m})$. Substituting into the definition $I(B:M)=S(B)+S(M)-S(BM)$ gives
+
+$$
+\delta\overline S_A\equiv S(\rho_B)-\sum_m p_m S(\rho_{B,m})
+=I(B:M)\geq0.
+$$ {#eq-mon-measurement-loss}
+
+For rank-one outcomes on a pure state, the conditional state of the whole system remains pure, so its $A$ and $B$ entropies agree. This establishes the left side as the average loss of entanglement. The equation holds for more general pure conditional trajectories as well. It is an average statement; an individual outcome can increase entanglement by selecting a rare branch.
+
+The loss is the information that the measurement record reveals about the outside. A qubit deep inside $A$ can have a very uncertain outcome while revealing almost nothing about $B$. In a dynamically encoded state, correlations are distributed across many sites, so a local observation is a weak probe of the information shared across the distant boundary. Counting local measurements therefore overestimates their destructive effect.
+
+## A controlled geometric limit: measurements cut bonds {#sec-mon-percolation}
+
+Represent a trajectory as a tensor network. An unmeasured wire has dimension $q$. A rank-one projector has matrix elements $\langle a|P_m|b\rangle=\langle a|m\rangle\langle m|b\rangle$, so it factorizes into a ket and a bra. In the tensor-network connectivity problem this replaces a dimension-$q$ connection by a dimension-one connection.
+
+Suppose a curve separates output region $A$ from $\bar A$ and crosses $n_\gamma$ unbroken wires. Their combined index has dimension $q^{n_\gamma}$, giving a Schmidt decomposition with at most that many terms. Hence
+
+$$
+\operatorname{rank}\rho_A\leq q^{n_\gamma},
+\qquad
+S_n(A)\leq n_\gamma\ln q
+$$
+
+for all Rényi indices $n\geq0$. Minimizing over separating cuts gives a kinematic upper bound for every trajectory. When the bound is saturated, the entropy is the minimum cost of a path with weight $\ln q$ on an unbroken bond and zero on a measured bond.
+
+There are two related controlled uses of this geometry. The Hartley entropy $S_0=\ln\operatorname{rank}\rho_A$ maps to the connectivity problem for generic circuits, with rank-deficient fine tuning excluded. For fixed positive Rényi index, the leading entropy at large $q$ is also given by the minimal cut, with qualifications about the order of limits near the critical point. These statements do **not** make the physical von Neumann entropy at $q=2$ equal to a minimal cut [@skinner2019measurement; @bao2020theory].
+
+At small $p$, a long cut must cross a positive density of intact bonds. Its cost is proportional to interval length. Increasing $p$ reduces this tension. Once zero-cost bonds percolate, a cut can cross a large sample at bounded cost. At the percolation threshold, nested structures occur on every length scale and give a logarithmic mean cut cost.
+
+For the usual square-lattice bond geometry the threshold is $p_c^{\mathrm{perc}}=1/2$. Its correlation length exponent is $\nu_{\mathrm{perc}}=4/3$. These are properties of that classical limit and geometry. Finite-$q$ entanglement transitions generally have a different critical rate and a different universality class. In particular, the frequently quoted Clifford-circuit value near $0.16$--$0.17$ depends on the gate and measurement convention; it is not a universal number.
+
+::: {.callout-tip title="A useful distinction"}
+
+Connectivity supplies an exact entropy bound even when it does not supply the entropy itself. Quantum amplitudes and the weights of Schmidt values contain information that a broken-bond graph discards. A controlled limiting mapping and an intuitive picture can therefore have different domains of validity.
+:::
+
+## Replica statistical mechanics, with the Born rule kept explicit {#sec-mon-replicas}
+
+An entropy involves several copies of a density matrix. For an integer $n$, the identity
+
+$$
+\operatorname{tr}\widetilde\rho_{A,\boldsymbol m}^{\,n}
+=\operatorname{tr}\!\left[
+\widetilde\rho_{\boldsymbol m}^{\otimes n}T_A^{(n)}\right]
+$$ {#eq-mon-replica-twist}
+
+introduces a cyclic permutation $T_A^{(n)}$ of replicas on $A$, and the identity permutation on $\bar A$. Each copy of $\widetilde\rho$ contains a forward circuit and its complex conjugate. Haar averaging a local gate pairs forward and backward indices in ways labeled by permutations. The resulting lattice model has permutation-valued degrees of freedom $\sigma\in S_N$, living on circuit spacetime. An entropy insertion changes the pairing at the output boundary, forcing a domain wall between different pairing patterns [@jian2020measurement; @bao2020theory].
+
+The essential normalization can be derived without guessing the replica limit. Write
+
+$$
+X_n(\boldsymbol m)=\operatorname{tr}\widetilde\rho_{A,\boldsymbol m}^{\,n}.
+$$
+
+The Born-averaged normalized moment is
+
+$$
+F(n)=\mathbb E\sum_{\boldsymbol m}
+p_{\boldsymbol m}\operatorname{tr}\rho_{A,\boldsymbol m}^{\,n}
+=\mathbb E\sum_{\boldsymbol m}
+X_n(\boldsymbol m)p_{\boldsymbol m}^{\,1-n}.
+$$ {#eq-mon-born-moment}
+
+At $n=1$, $F(1)=1$. Differentiation then gives the physical average von Neumann entropy:
+
+$$
+\overline{S_A}=-\left.\frac{dF(n)}{dn}\right|_{n=1}.
+$$ {#eq-mon-born-entropy}
+
+To check this, differentiate a single term: $\partial_n\operatorname{tr}\rho_A^n|_{n=1}=\operatorname{tr}(\rho_A\ln\rho_A)$. The prefactor $p_{\boldsymbol m}$ is the probability of a fixed trajectory and does not depend on the entropy index $n$.
+
+The factor $p^{1-n}$ is awkward for integer-replica calculations. One introduces the polynomial object
+
+$$
+\mathcal Z(n,k)=\mathbb E\sum_{\boldsymbol m}
+X_n(\boldsymbol m)p_{\boldsymbol m}^{\,k}
+$$ {#eq-mon-polynomial-replicas}
+
+for positive integer $n$ and nonnegative integer $k$. It contains $N=n+k$ forward/backward pairs. Continuing $k\to1-n$ recovers $F(n)$, so the total replica number approaches $N\to1$, rather than zero. This is the extra replica pair supplied by the Born probability. Analytic continuation is a nontrivial step; writing the integer-replica lattice model is not by itself a proof that its continuum limit is known.
+
+For a Rényi entropy with $n>1$, an additional issue appears:
+
+$$
+\overline{S_n}=\frac{1}{1-n}\,
+\mathbb E\sum_{\boldsymbol m}p_{\boldsymbol m}
+\left[\ln X_n(\boldsymbol m)-n\ln p_{\boldsymbol m}\right].
+$$ {#eq-mon-quenched-renyi}
+
+In general this is different from $\ln F(n)/(1-n)$, because the logarithm and disorder average do not commute. A further replica trick can handle the logarithm. Both approaches recover the von Neumann entropy when their continuations are justified.
+
+In the entangling phase the pairing spins are ordered. A twist on $A$ forces a domain wall with a free energy proportional to $|A|$, giving a volume law. Measurements relax constraints inherited from unitarity and can disorder the pairing spins. In the disordered phase a boundary twist has a finite penetration depth and costs only an area-law amount. This connects an entanglement transition to ordering in a classical model, although the physical system itself is evolving in real time.
+
+### Why the generic critical field theory is difficult
+
+Independent permutations of forward and backward layers produce an intrinsic replica symmetry, conventionally written $G_N=(S_N\times S_N)\rtimes\mathbb Z_2$ when conjugation is included. It is smaller than the symmetry that would arbitrarily permute all $N!$ spin values. Treating those values as equivalent gives a $Q=N!$ Potts model, but generic allowed perturbations reduce its symmetry back to $G_N$.
+
+The tempting Potts continuation toward $Q=1$ is not a derivation that every measurement transition is percolation. The symmetry-reducing perturbations include many relevant directions. Continuing $N$ also makes the order-parameter representation subtle. One proposed alternative uses a matrix $X_{ab}$ that measures the overlap of forward trajectory $a$ and backward trajectory $b$. Distinct ordered pairing patterns give distinct ordered matrices. Such a matrix transforms naturally under $G_N$, making candidate Landau--Ginsburg descriptions possible. In the review's treatment these continuum theories are proposals whose correspondence to the physical finite-$q$ fixed point remains to be established [@nahum2021alltoall].
+
+A random tensor network has similar permutation spins, but no requirement to sample each tensor-network realization with a quantum trajectory's Born probability. Its disorder-averaged free energy instead uses the usual zero-replica continuation, $N\to0$. Both $N\to0$ and $N\to1$ can formally suggest a $Q=N!\to1$ Potts problem. That shared formal value does not erase their different normalization or make the associated symmetry-breaking perturbations identical. It is also distinct from the physically controlled large-$q$ minimal-cut limit.
+
+## The volume-law phase is a fluctuating domain wall {#sec-mon-polymer}
+
+Inside the entangling phase, an interface between pairing patterns has positive tension. Coarse graining favors a directed path even though microscopic minimal cuts can turn backward in circuit time. Its coarse-grained energy may be written schematically as
+
+$$
+E[y]=\int_0^\ell dx\left[
+\tau+\frac{\kappa}{2}(\partial_x y)^2+V(x,y(x))\right],
+\qquad
+Z_{\mathrm{DW}}=\int\mathcal Dy\,e^{-E[y]}.
+$$ {#eq-mon-polymer-energy}
+
+Here $y$ is the path's transverse displacement, $\tau$ is its mean tension, $\kappa$ penalizes bending, and $V$ is a random potential inherited from the circuit. The effective temperature has been absorbed into the coefficients. The domain-wall free energy is $-\ln Z_{\mathrm{DW}}$. This is a directed polymer in a random environment, a problem in the Kardar--Parisi--Zhang family.
+
+In one longitudinal and one transverse dimension its characteristic free-energy fluctuations scale as $\ell^{1/3}$, while transverse wandering scales as $\ell^{2/3}$. Applied to the monitored volume-law phase, the correspondence predicts a subleading entropy scale
+
+$$
+S_A=s\ell+O(\ell^{1/3}),
+\qquad
+|y|_{\mathrm{typ}}=O(\ell^{2/3}).
+$$ {#eq-mon-polymer-scaling}
+
+The mean correction, distribution, and sign depend on the geometry and boundary conditions; $O(\ell^{1/3})$ should not be read as a fixed positive term in every sample. Detailed Clifford-circuit simulations support the directed-polymer description and its scaling functions. Extending it to generic monitored chaotic systems is a universality hypothesis supported by the statistical-mechanics mapping, rather than an exact microscopic identity at arbitrary $q$ [@li2023domainwalls].
+
+The same picture explains the failure of the counting argument. Let $\delta\overline S(x)$ be the entropy lost by measuring a site at distance $x$ from the nearer boundary of a long interval. Numerical studies of the circuit and polymer descriptions find a decaying average, approximately $x^{-\Delta}$ with $\Delta\simeq1.25$ in the studied models. Summing the effect of a dilute set of measurements gives
+
+$$
+\delta\overline S_{\mathrm{layer}}
+\sim p\int_a^\ell dx\,x^{-\Delta}.
+$$ {#eq-mon-loss-integral}
+
+For $\Delta>1$, this approaches a constant as $\ell\to\infty$. Boundary gates can replace that amount each step. The short-distance cutoff $a$ is essential because continuum scaling does not apply at a single lattice spacing. The argument estimates weak perturbations around a stationary phase; it does not imply that simultaneous losses always add exactly.
+
+The mean can be dominated by rare geometries in which a domain wall is unusually sensitive to a distant measurement. A typical loss can be much smaller; the polymer picture suggests stretched-exponential suppression of the form $\exp(-c x^{1/3})$. Keeping typical and disorder-averaged behavior separate is important in this problem.
+
+## Purification turns the transition into a memory experiment {#sec-mon-purification}
+
+Now start from $\rho_0=I/q^L$. Unitaries cannot change its entropy, but a recorded measurement can reduce it. For example, measuring a single qudit in a basis projects it into a known pure state and removes $\ln q$ of uncertainty. A complete measurement of all sites gives a pure product state in one layer.
+
+At weak monitoring, scrambling distributes the initial uncertainty nonlocally. Studies of generic hybrid dynamics find an intermediate-time entropy plateau,
+
+$$
+\overline{S(\rho_{\boldsymbol m}(t))}\simeq s_Q L,
+\qquad
+t_{\mathrm{relax}}\ll t\ll t_{\mathrm{pur}},
+$$ {#eq-mon-entropy-plateau}
+
+with $s_Q>0$ and $t_{\mathrm{pur}}$ exponential in $L$. At strong monitoring, local information is extracted at a rate that stays nonzero as $L$ grows [@gullans2020purification]. A fixed local region can purify on an order-one time scale. Requiring the entropy of the *entire* system to be below a fixed tolerance can introduce a $\ln L$ factor, even when its entropy density decays exponentially at a size-independent rate. This distinguishes a local purification rate from the time needed to clear every residual bit.
+
+For spatially local generic circuits, the change between these memory regimes coincides with the pure-state entanglement transition. The domain-wall interpretation makes the connection natural: both the volume-law coefficient and the residual information density measure the free-energy cost of interfaces separating spacetime boundaries. Equality of particular coefficients requires matching geometry and conventions, rather than equating arbitrary finite-time entropies.
+
+### Purify the input with a reference
+
+Introduce an inert reference $R$, of the same dimension as the system $S$, and prepare
+
+$$
+|\Phi\rangle_{RS}=q^{-L/2}\sum_{a=1}^{q^L}|a\rangle_R|a\rangle_S.
+$$ {#eq-mon-reference-input}
+
+Tracing out $R$ gives $I/q^L$ on $S$. Apply $K_{\boldsymbol m}$ only to $S$. The conditional $RS$ state remains pure, so
+
+$$
+S(R)_{\boldsymbol m}=S(S)_{\boldsymbol m},
+\qquad
+I(R:S)_{\boldsymbol m}=2S(R)_{\boldsymbol m}.
+$$ {#eq-mon-reference-entropy}
+
+Purification is therefore loss of entanglement with the reference. In the mixed phase the system preserves correlations with its input for exponentially long times. In the pure phase the record rapidly reveals enough information to remove them. Merely forgetting the record and observing a mixed output would not diagnose this memory.
+
+A single reference qubit can probe the transition too. Entangle it with a system qubit, encode that information by a suitable scrambling stage, and then monitor the system. Its average entropy is a local order parameter in space but depends on an extended circuit history. For generic encoding and a suitable time window, it stays nonzero in the memory phase and tends to zero in the rapidly purifying phase. The precise insertion time and boundaries select bulk or boundary critical observables [@gullans2020probes]. Experimentally, knowing the reference density matrix conditioned on a long record remains a challenge; using one ancilla does not automatically remove every decoding or sampling cost.
+
+## What exactly is the quantum code? {#sec-mon-code}
+
+For qubits with Clifford gates and Pauli measurements, a mixed stabilizer state with $r$ independent stabilizer generators has the form
+
+$$
+\rho=2^{-L}\prod_{a=1}^{r}(I+g_a),
+\qquad
+S(\rho)=(L-r)\ln2.
+$$ {#eq-mon-stabilizer-code}
+
+The product projects onto a subspace of dimension $2^{L-r}$. Writing $k=L-r$, the unmeasured information consists of $k$ logical qubits, and its rate is $k/L=s_Q/\ln2$ on the entropy plateau. The factor $\ln2$ matters because $s_Q$ is measured in nats per physical qubit.
+
+Future gates change the encoding, and future measurements can replace stabilizers without immediately decreasing $k$. The resulting code is dynamical and depends on the record. The fact that information survives many measurements means it has become difficult for local observations to distinguish logical states. In exact error correction, this is expressed by the Knill--Laflamme condition
+
+$$
+P_{\mathcal C}E_a^\dagger E_bP_{\mathcal C}
+=c_{ab}P_{\mathcal C},
+$$ {#eq-mon-knill-laflamme}
+
+where $P_{\mathcal C}$ projects onto the code subspace. The errors have identical action on all logical states, up to a syndrome, so they do not disclose logical information.
+
+An equivalent diagnostic for erasing a region $A$ is **decoupling** from the reference. If $I(R:A)=0$, then $A$ contains no information about the encoded input, and the complementary physical degrees of freedom suffice for recovery. Approximate decoupling gives approximate recovery. This is the information-theoretic version of the suppressed measurement loss in @eq-mon-measurement-loss.
+
+There are several distances one can define. The ordinary stabilizer-code distance is the minimum weight of a nontrivial logical Pauli operator. A **contiguous distance** asks instead how long a connected interval must be before its erasure reveals logical information. Domain-wall arguments and numerics associate the latter geometric scale with subleading entropy terms; in the directed-polymer regime it can grow like $L^{1/3}$ [@li2021codes; @li2023domainwalls]. A statement about this interval scale is not automatically a statement about the minimum weight of every disconnected logical operator.
+
+A finite rate and growing geometric protection do not supply a practical fault-tolerant computer. An efficient decoder under additional noise is a separate algorithmic requirement. The monitored-circuit code picture establishes a mechanism for information protection against the specified measurement dynamics.
+
+## Critical diagnostics and finite-size reasoning {#sec-mon-critical}
+
+A useful numerical analysis combines several quantities. The half-chain entropy distinguishes the two phases but contains a large volume-law background. Mutual information between separated intervals, reference-qubit entropy, and the tripartite information often isolate critical correlations more cleanly.
+
+For three regions $A,B,C$, define
+
+$$
+\begin{aligned}
+I_3(A:B:C)={}&S_A+S_B+S_C-S_{AB}-S_{AC}-S_{BC}+S_{ABC}.
+\end{aligned}
+$$ {#eq-mon-tripartite}
+
+Terms proportional to a simple local boundary contribution cancel in suitable geometries. Divide a periodic chain into four equal intervals and use three of them for $A,B,C$. Near a continuous transition a dimensionless diagnostic can obey
+
+$$
+\overline{I_3}=\mathcal F\!\left((p-p_c)L^{1/\nu},\,t/L^z\right)
++\text{finite-size corrections}.
+$$ {#eq-mon-finite-size}
+
+At fixed sufficiently large $t/L^z$, curves for different $L$ can cross near $p_c$. Their slopes scale as $L^{1/\nu}$. A crossing alone is insufficient: drift, statistical errors, irrelevant corrections, and initial transients must be checked. The same reasoning applies to an ancilla diagnostic with its appropriate scaling dimension and prefactor.
+
+Numerical evidence in the models reviewed supports a continuous transition with $z\simeq1$. Clifford simulations allow large sizes and show conformal covariance of entropies and mutual information. Haar-circuit calculations are more limited in size. These observations should not be turned into an exact identity of their universality classes [@li2021conformal].
+
+At a conformally invariant critical point on a periodic chain, the logarithm for a single interval is replaced by a chord-distance form,
+
+$$
+\overline{S_A}=\alpha\ln\!\left[
+\frac{L}{\pi a}\sin\!\left(\frac{\pi\ell}{L}\right)\right]+b.
+$$ {#eq-mon-critical-chord}
+
+The coefficient $\alpha$ comes from a replica boundary-twist observable. It must not automatically be identified with $c/3$ of a unitary ground-state conformal field theory. The effective theory is nonunitary, the measured object is a disorder-averaged trajectory entropy, and replica derivatives enter its definition. Starting from a product state at criticality, the corresponding entropy grows logarithmically with time before finite-size saturation. Dynamic scaling replaces the available length by $t^{1/z}$, although the logarithm's coefficient also depends on whether one studies an interval, a half-chain, or a boundary geometry.
+
+## Removing space: all-to-all dynamics and trees {#sec-mon-alltoall}
+
+Consider a stochastic sequence of operations: measure a randomly chosen qudit with probability $p$, or apply a two-qudit gate to a randomly selected pair with probability $1-p$. Time is usually scaled so that each qudit experiences order-one operations per unit time. There is no fixed spatial boundary, so a volume-versus-area classification of arbitrary subsets is less useful. The memory experiment survives intact: does an extensive initial entropy persist for exponentially long times?
+
+At large $q$, the information transmitted from the initial to final slice becomes a minimal cut on a random graph with temporal ordering. Its connectivity transition is accessible by mean-field percolation methods. Some commuting, instantaneous-quantum-polynomial-time gate constructions instead have a percolation problem on a time slice. These are specific solvable ensembles, not a universal replacement for quantum dynamics [@nahum2021alltoall; @vijay2020volume].
+
+The latter example also exposes a distinction that an extensive entropy can miss. A state can consist of many independent finite entangled clusters, or contain one entangled cluster holding a finite fraction of all sites. For a generic partition in an all-to-all geometry, many finite clusters can cross the partition and give extensive entropy in either case. The mean-field transition in that construction is a separability transition between these cluster structures. An operational diagnostic asks whether measurements outside two selected small regions can generate appreciable mutual information between them: a large connected entangled cluster can supply a route for such measurement-assisted entanglement. This is different from simply asking for the entropy density.
+
+At finite $q$, a randomly connected circuit is locally tree-like as $L\to\infty$: following a finite number of interactions typically does not encounter a loop. This motivates a related random tree tensor network. Recursions for the information transmitted toward the root can become tractable. For certain **forced-measurement** models, in which outcomes are fixed and selected rather than Born sampled, exact tree results yield an essential singularity of the schematic form
+
+$$
+\mathcal O\sim\exp\!\left[-\frac{c}{\sqrt{|p-p_c|}}\right]
+$$ {#eq-mon-tree-singularity}
+
+on the entangled side. The direction of approach depends on how the tuning parameter is defined. This is much weaker than a power-law onset. Local tree structure alone does not prove that every Born-sampled all-to-all circuit has the same transition, and postselection changes the ensemble weights. Keeping this distinction prevents one of the most attractive solvable examples from being mistaken for a complete solution of the generic transition.
+
+## Worked problems and exercises {#sec-mon-exercises}
+
+### 1. A measured Bell pair
+
+Prepare $\sqrt\lambda|00\rangle+\sqrt{1-\lambda}|11\rangle$ and measure the first qubit in the $Z$ basis. Calculate the outcome probabilities, conditional entanglement, entropy of the averaged first-qubit state, and $I(B:M)$.
+
+::: {.callout-note collapse="true" title="Solution"}
+
+The probabilities are $\lambda$ and $1-\lambda$. Each conditional state is a product. With $h(\lambda)=-\lambda\ln\lambda-(1-\lambda)\ln(1-\lambda)$, the initial entropy and the entropy of the averaged marginal are both $h(\lambda)$. The classical record perfectly identifies the conditional basis state of $B$, so $I(B:M)=h(\lambda)$. This verifies @eq-mon-measurement-loss including its units.
+:::
+
+### 2. The record is not a uniform random string
+
+A qubit initially in $|0\rangle$ is measured first in $Z$ and then in $X$. List all four nominal records and their Born probabilities. Explain why uniformly averaging over the four normalized states would define a different process.
+
+::: {.callout-note collapse="true" title="Solution"}
+
+The first outcome is certainly $Z=+1$. The records $(+, +)$ and $(+, -)$ each have probability $1/2$; both records beginning with $-$ have probability zero. The latter have no normalized conditional state for this input. More generally, even when every record is possible, its probability depends on its earlier outcomes and gates. A uniform record average is a forced ensemble, rather than the Born ensemble.
+:::
+
+### 3. Derive the replica normalization
+
+Use $\rho_{A,m}=\widetilde\rho_{A,m}/p_m$ to derive @eq-mon-born-moment. Then show that $\ln F(n)/(1-n)$ and the average Rényi entropy agree as $n\to1$, even though they generally disagree at $n=2$.
+
+::: {.callout-note collapse="true" title="Hint and solution"}
+
+Each $n$th power contributes $p_m^{-n}$, and the Born average supplies $p_m$. Since $F(1)=1$, expand $F(n)=1-(n-1)\overline S+O((n-1)^2)$. Then $\ln F(n)=-(n-1)\overline S+O((n-1)^2)$. At fixed $n>1$, the logarithm samples fluctuations nonlinearly, so this first-derivative coincidence does not persist.
+:::
+
+### 4. Local rate versus complete purification
+
+Suppose a strong-monitoring model has total entropy $S(t)\simeq L\ln q\,e^{-\gamma t}$, with $\gamma$ independent of $L$. Find the time at which $S(t)<\epsilon$, and compare it with the time at which $S(t)/L<\epsilon$.
+
+::: {.callout-note collapse="true" title="Solution"}
+
+Complete purification to this tolerance requires $t>\gamma^{-1}\ln(L\ln q/\epsilon)$, whereas the entropy-density criterion requires $t>\gamma^{-1}\ln(\ln q/\epsilon)$. A size-independent local decay rate is compatible with a logarithmic global clearing time. Neither has the exponential-in-$L$ memory of the weak-monitoring phase.
+:::
+
+### 5. Is the total loss extensive?
+
+Evaluate $\int_a^\ell x^{-\Delta}dx$ for $\Delta<1$, $\Delta=1$, and $\Delta>1$. Which case is compatible with replacing the loss by order-one boundary gates at a fixed small measurement density?
+
+::: {.callout-note collapse="true" title="Solution"}
+
+For $\Delta\ne1$ the result is $(\ell^{1-\Delta}-a^{1-\Delta})/(1-\Delta)$; at $\Delta=1$ it is $\ln(\ell/a)$. Only $\Delta>1$ gives a bounded large-$\ell$ result in this estimate. This is a stability check within a phase, not a derivation of its critical exponents.
+:::
+
+### 6. A reference distinguishes memory from mixedness
+
+Compare two channels on a single input qubit entangled with an inert reference: the identity channel, and a recorded complete $Z$ measurement. Compute conditional $S(R)$ in both cases. Explain why the unconditioned system marginal $I/2$ cannot distinguish them.
+
+::: {.callout-note collapse="true" title="Solution"}
+
+The identity preserves the Bell pair and $S(R)=\ln2$. A recorded $Z$ measurement leaves either $|00\rangle$ or $|11\rangle$, giving $S(R)=0$ in each trajectory. In both experiments the system marginal after discarding the record is $I/2$. Memory is a statement about correlations with the reference and the accessible record, not just the system's local mixedness.
+:::

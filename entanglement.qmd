@@ -1,0 +1,261 @@
+# Entanglement growth and the membrane {#sec-entanglement}
+
+A local circuit can turn a state described by a few numbers per site into a state whose direct description needs exponentially many numbers. Entanglement measures this change without choosing a preferred observable. This chapter builds two complementary descriptions: a geometrical optimization in spacetime, and an exact statistical mechanics mapping for averaged Rényi entropies. The first exposes the large scale physics; the second explains where the geometry comes from.
+
+We consider a one dimensional chain with local Hilbert space dimension $q$, nearest neighbor gates, and a product initial state unless stated otherwise. One unit of $t$ is **one layer** of the alternating brickwork circuit. The lattice spacing is one, so the maximum circuit propagation speed is $v_{\mathrm{LC}}=1$. A two layer Floquet period therefore lasts two units of $t$. Entropies use natural logarithms. For a circuit with no conserved densities, the equilibrium entropy density is $s_{\mathrm{eq}}=\ln q$.
+
+## Why entanglement grows linearly {#sec-ent-growth}
+
+For a pure global state, the entropy $S_A=-\operatorname{Tr}(\rho_A\ln\rho_A)$ measures entanglement between $A$ and its complement. A gate acting wholly inside either region cannot change $S_A$: it only changes a Schmidt basis. Only gates crossing the boundary can change the Schmidt coefficients. In a local circuit the number of such gates per layer is proportional to the boundary area, suggesting
+
+$$
+S_A(t)\simeq s_{\mathrm{eq}}v_E |\partial A|t
+$$
+
+before different boundaries interact. Here $|\partial A|$ counts boundary points in one dimension. The coefficient $v_E$ is called the **entanglement velocity**; it converts entropy production into a length per unit time. It need not equal the speed at which a local perturbation spreads.
+
+For a finite interval of $\ell$ sites in an infinite chain, $S_A\leq\ell\ln q$. Generic chaotic evolution approaches this volume law at late times, with finite size corrections. Thus the early linear law cannot continue forever. A description of the crossover should account both for entropy generation at the two ends and for the finite information capacity of the interval.
+
+The same observation explains a simulation bottleneck. A matrix product state with bond dimension $\chi$ has at most $\chi$ nonzero Schmidt coefficients across a bond, so $S\leq\ln\chi$. Following a state with $S\simeq s_{\mathrm{eq}}v_Et$ requires at least $\chi\geq\exp(s_{\mathrm{eq}}v_Et)$. This lower bound concerns an accurate state representation; certain observables can remain accessible much longer.
+
+## The cut bound: geometry before probability {#sec-ent-cut-bound}
+
+Represent the state by its circuit tensor network. Cut enough internal legs to separate the final legs in $A$ from those in $\bar A$. If the cut crosses $m$ legs of dimension $q$, contracting tensors on its two sides gives
+
+$$
+\ket{\psi}=\sum_{\alpha=1}^{q^m}\ket{a_\alpha}_A\ket{b_\alpha}_{\bar A}.
+$$
+
+This is a sum of at most $q^m$ product states. The Schmidt rank is therefore at most $q^m$, and every Rényi entropy obeys
+
+$$
+S_n(A)\leq m\ln q,\qquad n>0.
+$$ {#eq-ent-cut-bound}
+
+Minimizing $m$ over allowed cuts improves the bound. A cut reaching the initial surface can end freely there for a product state because each initial tensor has only one physical index. An initially entangled state contributes its own entanglement cost at this surface.
+
+Unitarity also allows cancellation of gates against their conjugates when computing observables. It constrains the useful cuts, and in one dimension an optimal cut can be chosen to move causally through the circuit. A generic tensor network need not have this extra structure. Equation @eq-ent-cut-bound is an exact rank bound for any bond dimensions; equality is an additional physical statement.
+
+In suitable random circuit ensembles the bound becomes asymptotically saturated at leading order as $q\to\infty$. One transparent version applies gates at independent Poisson times on every bond, rather than at regular brickwork times. Its circuit geometry is itself random. The entropy, divided by $\ln q$, becomes the minimal cut cost in this limit. Randomness makes the optimizing path nontrivial even at infinite $q$. In regular brickwork the leading $q=\infty$ cost is highly degenerate; finite $q$ resolves that degeneracy. The Poisson model has its own time normalization and should not be used to infer numerical brickwork velocities. [@nahum2017growth]
+
+## From cuts to a continuum membrane {#sec-ent-membrane}
+
+After coarse graining, a one dimensional cut becomes a path $x(\tau)$ in two dimensional spacetime. Associate a cost $s_{\mathrm{eq}}\mathcal E(v)\,d\tau$ with a segment whose slope is $v=dx/d\tau$. For the half chain $(-\infty,y]$, the variational prescription is
+
+$$
+S(y,t)=\min_{x(t)=y}\left[
+ s_{\mathrm{eq}}\int_0^t\mathcal E(\dot x)\,d\tau
+ + S(x(0),0)\right].
+$$ {#eq-ent-membrane}
+
+The initial entropy is **outside** the prefactor $s_{\mathrm{eq}}$. Equivalently one may divide the entire equation by $s_{\mathrm{eq}}$ and use the initial entropy in units of $s_{\mathrm{eq}}$. Keeping this normalization explicit avoids a dimensional ambiguity.
+
+$\mathcal E(v)$ is an effective line tension: a free energy per unit time, expressed in entropy density units. It includes the cost of microscopic paths and the number of paths available. It is model dependent. In a parity invariant homogeneous system it is even and convex. Convexity follows because a long path may combine segments of velocities $v_1,v_2$; allowing such mixtures cannot cost more than artificially requiring a uniform slope with a larger cost.
+
+For a homogeneous product state, $S(x,0)=0$. The cheapest slope is zero, so
+
+$$
+S(y,t)=s_{\mathrm{eq}}\mathcal E(0)t,
+\qquad v_E\equiv\mathcal E(0).
+$$ {#eq-ent-velocity}
+
+The membrane description is a leading large distance and long time theory. Microscopic offsets, finite size corrections, and sample fluctuations require more information. For generic chaotic systems it is a physically well supported coarse grained description, with controlled derivations in particular circuit limits. It is not an exact identity for arbitrary Hamiltonians and initial states.
+
+Homogeneity is another assumption. Spatial weak links can make the tension depend explicitly on position, $\mathcal E(x,\tau,v)$, allowing a membrane to seek a region with slow entanglement production. Conserved densities can make both the tension and the local equilibrium entropy depend on a slowly evolving charge profile; transport can also carry entropy through a thermodynamic current. The simple homogeneous formula therefore needs additional hydrodynamic fields for an inhomogeneous charge quench.
+
+### Deriving the local growth equation
+
+Split the final interval $dt$ off an optimal trajectory. If that short segment has velocity $v$, its initial position is $y-v\,dt$. Dynamic programming gives
+
+$$
+S(y,t+dt)=\min_v\left[S(y-vdt,t)+s_{\mathrm{eq}}\mathcal E(v)dt\right].
+$$
+
+Expanding the first term to first order yields
+
+$$
+\partial_tS=s_{\mathrm{eq}}\Gamma\!\left(\frac{\partial_yS}{s_{\mathrm{eq}}}\right),
+\qquad
+\Gamma(u)=\min_v[\mathcal E(v)-vu].
+$$ {#eq-ent-hj}
+
+Thus the entropy production function is the negative of the usual convex Legendre transform. If $\mathcal E$ is differentiable, the selected slope satisfies $\mathcal E'(v)=u$. A nonzero initial entropy gradient changes which paths are optimal.
+
+There is a useful consistency check. Adjacent half chain entropies differ by no more than one site entropy, by subadditivity and the Araki–Lieb inequality. Coarse graining therefore gives $|\partial_yS|\leq s_{\mathrm{eq}}$, or $|u|\leq1$. A saturated profile with $u=1$ must have zero further production, $\Gamma(1)=0$. The tangent condition at the butterfly velocity is
+
+$$
+\mathcal E(v_B)=v_B,\qquad \mathcal E'(v_B)=1.
+$$ {#eq-ent-tangent}
+
+The left moving version follows by parity. In the standard causal membrane setting $\mathcal E(v)\geq|v|$ on the relevant domain, and convexity implies $v_E\leq v_B\leq1$. Equality can occur in special models. The tangent condition connects entropy production with operator propagation, but does not equate their velocities. [@jonay2018coarse; @zhou2020membrane]
+
+### Worked example: a curved tension
+
+Consider a model whose tension, on $|v|\leq1$, is
+
+$$
+\mathcal E(v)=\frac{1+v^2}{2}.
+$$
+
+This is the infinite $q$ Poisson circuit result in its bond rate convention. Minimizing $\mathcal E(v)-uv$ gives $v=u$ and $\Gamma(u)=(1-u^2)/2$. Hence
+
+$$
+\partial_tS=\frac{s_{\mathrm{eq}}}{2}
+ -\frac{(\partial_yS)^2}{2s_{\mathrm{eq}}}.
+$$
+
+A flat profile grows at rate $s_{\mathrm{eq}}/2$; a maximally tilted one does not grow. This example illustrates the Legendre transform. Its numerical $v_E=1/2$ is specific to the stated Poisson model.
+
+### Finite intervals and saturation
+
+For an interval there are two competing membrane topologies. At early times two nearly vertical paths descend from its endpoints to the initial surface, with total cost $2s_{\mathrm{eq}}v_Et$. At late times a connected membrane joins the endpoints above the initial surface. Its two sides can have slopes $\pm v_B$. Each side has length in time $\ell/(2v_B)$ and tension $v_B$, so the total cost is $s_{\mathrm{eq}}\ell$. Consequently the leading homogeneous result is
+
+$$
+S_A(t)\simeq s_{\mathrm{eq}}\min(2v_Et,\ell),
+\qquad t_*\simeq\frac{\ell}{2v_E}.
+$$ {#eq-ent-saturation}
+
+The connected V shaped membrane first fits in the slab when $t\geq\ell/(2v_B)$. Since $v_E\leq v_B$, it fits by the time it becomes optimal. Finite size effects smooth this sharp leading order change of minimizing configuration. In higher spatial dimensions the line becomes a surface, its tension depends on its local orientation, and its final boundary is $\partial A$. Curvature and region shape then enter the minimization.
+
+![Competing membranes for the entropy of an interval. The blue paths reach the initial product state and describe growth; the red path joins the final endpoints and describes saturation. This original schematic illustrates topology only: its drawn angles do not specify a line tension or a fitted velocity.](figs/membrane){#fig-ent-membrane width=95%}
+
+The geometry resembles holographic extremal surface constructions. There the original entropy surface lives in an additional gravitational dimension; appropriate scaling limits yield a membrane description in boundary spacetime. This connection supplies examples and consistency checks, rather than an identification of a finite $q$ spin circuit with a gravitational theory. [@mezei2018membrane]
+
+## Purity is a four copy observable {#sec-ent-purity}
+
+The second Rényi entropy is $S_2(A)=-\ln P_A$, where $P_A=\operatorname{Tr}\rho_A^2$ is the purity. Introduce two copies of the state and let $F_A$ swap their degrees of freedom in $A$. Direct contraction of indices gives the swap identity
+
+$$
+P_A=\bra{\psi}^{\otimes2}F_A\ket{\psi}^{\otimes2}.
+$$ {#eq-ent-swap}
+
+For example, writing $\psi_{ab}$ with $a\in A,b\in\bar A$, both sides equal $\sum_{a,a',b,b'}\psi_{ab}\psi^*_{a'b}\psi_{a'b'}\psi^*_{ab'}$. Evolving each ket with $U$ and each bra with $U^*$ produces two forward and two backward circuit layers. At the top, $A$ uses a crossed pairing of copies, while $\bar A$ uses the uncrossed pairing. Their interface will become the entanglement domain wall.
+
+The essential simplification is local. For a Haar unitary $u$ acting on a $d$ dimensional space, define
+
+$$
+M=\int du\;u\otimes u^*\otimes u\otimes u^*.
+$$
+
+Invariance of Haar measure implies $M^2=M=M^\dagger$: it is the orthogonal projector onto tensors invariant under every replicated unitary. For two forward and two backward copies the invariant space is spanned by the pairings
+
+$$
+\ket{I\!I}=\sum_{a,b}\ket{a,a,b,b},\qquad
+\ket{X\!X}=\sum_{a,b}\ket{a,b,b,a}.
+$$ {#eq-ent-pairing-vectors}
+
+Here the ordering is forward 1, backward 1, forward 2, backward 2. These vectors have norms squared $d^2$ and overlap $d$. They are not orthogonal, so adding two ordinary normalized rank one projectors would be incorrect. With $\sigma,\tau\in\{I,X\}$ and Gram matrix $G_{\sigma\tau}=\langle\sigma\!\sigma|\tau\!\tau\rangle$, the exact formula is
+
+$$
+M=\sum_{\sigma,\tau}\ket{\sigma\!\sigma}
+ (G^{-1})_{\sigma\tau}\bra{\tau\!\tau},
+\qquad
+G=\begin{pmatrix}d^2&d\\d&d^2\end{pmatrix}.
+$$ {#eq-ent-haar-projector}
+
+For a two site gate $d=q^2$. The two pairing labels play the role of Ising spins. Averaging independent circuit gates separately produces a local classical sum over these labels, with boundary conditions fixed by @eq-ent-swap. The effective interactions encode unitarity and need not resemble a simple isotropic nearest neighbor Ising magnet.
+
+Why call this a pairing **order parameter**? A region of spacetime can predominantly connect forward copy 1 to backward copy 1, or to backward copy 2. These are distinguishable locally ordered pairing patterns in the replicated calculation. A wall between them carries an entanglement cost. This order lives in an auxiliary replicated description, not in an ordinary magnetization of the physical chain.
+
+## An exact averaged purity recursion {#sec-ent-annealed}
+
+The two copy mapping can be made unusually concrete. Pull the swap boundary backwards through an active Haar gate crossing it. Haar twirling the swap on just one of the gate's two sites gives
+
+$$
+\overline{(u^\dagger)^{\otimes2}(F\otimes I)u^{\otimes2}}
+ =\frac{q}{q^2+1}(I+F\otimes F).
+$$ {#eq-ent-twirl-swap}
+
+One derivation avoids integrating individual matrix elements. The answer must be $aI+bF_{12}$ on the two replica copies of the two site Hilbert space. Its trace and its trace after multiplication by $F_{12}$ both equal $q^3$. Since $\operatorname{Tr}I=q^4$ and $\operatorname{Tr}F_{12}=q^2$, the two equations imply $a=b=q/(q^2+1)$.
+
+Write $\overline P(x,t)$ for a half chain purity at a cut on the corresponding staggered spacetime lattice. Equation @eq-ent-twirl-swap becomes
+
+$$
+\overline P(x,t)=w[\overline P(x-1,t-1)+\overline P(x+1,t-1)],
+\qquad w=\frac{q}{q^2+1}.
+$$ {#eq-ent-purity-recursion}
+
+Each backward step moves the domain wall left or right. At a product initial boundary all terminal purities are one. For a path descending through $t$ such staggered levels, $\overline P=(2w)^t$; assigning a cut to an inactive final layer changes only a bounded offset. The corresponding **annealed** entropy is
+
+$$
+S_2^{\mathrm{ann}}\equiv-\ln\overline P
+=t\ln\frac{q^2+1}{2q}.
+$$ {#eq-ent-ann-growth}
+
+This is exact for the stated averaged purity recursion. It is not an exact expression for the average entropy $\overline{S_2}$. Jensen's inequality gives $-\ln\overline{e^{-S_2}}\leq\overline{S_2}$: low entropy realizations receive enhanced weight in the exponential average.
+
+There is also an explicit annealed line tension. A wall with displacement $x=vt$ has $(1+v)t/2$ right steps and $(1-v)t/2$ left steps. Its weight is
+
+$$
+Z(x,t)=\binom{t}{(t+x)/2}w^t.
+$$
+
+Using $\ln\binom{t}{pt}=tH(p)+O(\ln t)$, with $H(p)=-p\ln p-(1-p)\ln(1-p)$, gives
+
+$$
+\mathcal E_2^{\mathrm{ann}}(v)
+=\frac{\ln[(q^2+1)/q]-H[(1+v)/2]}{\ln q},
+\qquad |v|\leq1.
+$$ {#eq-ent-ann-tension}
+
+The first term counts the cost of one microscopic path; $H$ counts the entropy of competing paths. For qubits $v_{E,2}^{\mathrm{ann}}=\ln(5/4)/\ln2\simeq0.322$. Differentiating @eq-ent-ann-tension shows that its tangent of slope one touches at $v=(q^2-1)/(q^2+1)$, precisely the Haar operator butterfly speed derived in @sec-operator-spreading. This agreement is a nontrivial bridge between two calculations.
+
+## Random media and entropy fluctuations {#sec-ent-kpz}
+
+A continuum tension captures the leading entropy but loses realization dependent fluctuations. The correct statistical mechanics object for a typical purity is a directed polymer free energy in a random environment. The polymer prefers locally cheaper parts of spacetime but pays a cost to bend. For noisy one dimensional chaotic dynamics, this competition leads to Kardar–Parisi–Zhang, or KPZ, scaling:
+
+$$
+S(x,t)=s_{\mathrm{eq}}v_Et+b\,t^{1/3}\chi(x,t)+\cdots,
+\qquad \xi_x(t)\propto t^{2/3}.
+$$ {#eq-ent-kpz-scaling}
+
+Here $b$ is nonuniversal, $\chi$ is an order one random variable, and $\xi_x$ is the distance over which fluctuations remain correlated. The detailed distribution depends on the geometry and initial condition. The exponent $1/3$ concerns entropy fluctuations; $2/3$ concerns spatial correlations and polymer wandering. Neither is the diffusive $1/2$ broadening of an operator front in one spatial dimension.
+
+The local formulation helps explain the universality. Add short range noise and a smoothing term to @eq-ent-hj and expand around zero slope:
+
+$$
+\partial_tS=c+\nu\partial_x^2S
+ -\frac{\lambda}{2}(\partial_xS)^2+\eta(x,t).
+$$ {#eq-ent-kpz-equation}
+
+This is the KPZ equation up to a convention for the sign of the nonlinear coefficient. The noise represents spacetime variations of the microscopic entanglement cost; it is not an additional measurement on the quantum state. The continuum equation is an effective theory, whereas @eq-ent-purity-recursion was an exact ensemble statement.
+
+At infinite $q$ in a geometrically random circuit, randomness is already in the minimal cut. At finite $q$ in regular brickwork, random gates generate random corrections to the wall cost. Derivations using replicas and large $q$ expansions establish how these apparently different microscopic mechanisms reach the same directed polymer description. [@zhou2019statmech]
+
+## Beyond two copies {#sec-ent-general-replicas}
+
+For integer $n>1$, $\operatorname{Tr}\rho_A^n$ needs $n$ forward and $n$ backward copies. A local pairing now specifies which backward copy is paired to each forward copy. It is a permutation $\sigma\in S_n$. Its final boundary value is an $n$ cycle in $A$ and the identity in $\bar A$. For higher moments of a purity, or when using replicas to handle a logarithm, the total number of copies is a different integer $N$.
+
+The formal identity
+
+$$
+\overline{\ln P}=\lim_{k\to0}\frac{\overline{P^k}-1}{k}
+$$
+
+explains the replica trick. Integer $k$ is accessible by a multi copy contraction; the limit requires an analytic continuation. A useful calculation must justify that continuation or use a controlled limit. Writing this identity alone does not solve the typical entropy problem.
+
+Independent relabelings of forward and backward copies act as $\sigma\mapsto g_F\sigma g_B^{-1}$. Exchanging forward and backward copies sends $\sigma\mapsto\sigma^{-1}$. The corresponding generic pairing symmetry is $(S_N\times S_N)\rtimes\mathbb Z_2$. Walls now carry permutation labels and can split or join according to permutation multiplication. This combinatorics produces different line tensions for different Rényi indices and Page type finite size entropy deficits. For example, a Haar random pure state with equal large subsystem dimensions has leading moments $\operatorname{Tr}\rho_A^n\simeq C_nD_A^{1-n}$, where $C_n=(2n)!/[n!(n+1)!]$ is a Catalan number. Thus $S_n\simeq\ln D_A-\ln C_n/(n-1)$, rather than exactly $\ln D_A$.
+
+One can also expose pairing variables without averaging: decompose a replicated gate into its invariant projection plus a remainder on the complementary subspace. Local clusters of these remainders dress the wall and renormalize its tension after coarse graining. The expansion is controlled in suitable large $q$ regimes and provides a practical organization for deterministic circuits. It does not imply that arbitrary finite $q$ dynamics has positive classical Boltzmann weights. The von Neumann entropy requires a further continuation $n\to1$, which is particularly delicate. Direct exact computations are available for special families such as stabilizer and certain dual unitary circuits; the general finite $q$ theory is less explicit.
+
+## Exercises with solutions {#sec-ent-exercises}
+
+1. **A Bell pair across a cut.** A circuit contains one gate preparing $(\ket{00}+\ket{11})/\sqrt2$ from $\ket{00}$. Compare the cut bound with $S_1,S_2$.
+
+   *Solution.* The reduced state is $I/2$, so both entropies are $\ln2$. Cutting one qubit leg has cost $\ln2$ and saturates @eq-ent-cut-bound. A generic gate on two product qubits need not saturate it.
+
+2. **An initially tilted entropy profile.** In the quadratic tension example, take $S(x,0)=s_{\mathrm{eq}}ux+C$ over a large window, with $|u|<1$. Find the optimal starting point and growth rate before edges of the window matter.
+
+   *Solution.* A straight path ending at $y$ starts at $x_0=y-vt$. Its cost is $s_{\mathrm{eq}}uy+C+s_{\mathrm{eq}}t[(1+v^2)/2-uv]$. Minimization gives $v=u$, $x_0=y-ut$, and growth $s_{\mathrm{eq}}(1-u^2)/2$.
+
+3. **Annealed versus typical.** Two circuit realizations have equal probability and entropies $0$ and $2a$. Compute the two averages.
+
+   *Solution.* $\overline{S_2}=a$, while $S_2^{\mathrm{ann}}=-\ln[(1+e^{-2a})/2]$. For $a\gg1$ the latter tends to $\ln2$, displaying strong sensitivity to rare low entropy samples.
+
+4. **Velocity from a tangent.** Verify @eq-ent-tangent for @eq-ent-ann-tension.
+
+   *Solution.* $\mathcal E'(v)=\ln[(1+v)/(1-v)]/(2\ln q)$. Setting it to one gives $(1+v)/(1-v)=q^2$, hence $v=v_B=(q^2-1)/(q^2+1)$. Substituting the associated probabilities $q^2/(q^2+1)$ and $1/(q^2+1)$ into $H$ gives $\mathcal E(v_B)=v_B$.
+
+5. **What the membrane does not determine.** Does knowledge of $\mathcal E(v)$ determine a complete probability distribution of entanglement fluctuations?
+
+   *Solution.* No. It determines the leading deterministic cost. Noise strength, fluctuation boundary conditions, and the effective universality class are additional information. Even within KPZ scaling, initial geometry can change the limiting distribution.

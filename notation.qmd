@@ -1,0 +1,86 @@
+# Notation and a compact glossary {#sec-notation}
+
+## Shared conventions
+
+All logarithms are natural unless explicitly written otherwise. Entropies are in nats; divide by $\ln2$ to express them in bits. The lattice spacing is one. Time $t$ counts **one brickwork layer**, so a complete alternating pair of layers takes time two. When a model instead uses Poisson gates or Brownian increments, its separate rate convention is stated locally. A Poisson circuit has no strict finite-speed causal cone in an individual realization, so the brickwork bound $v_{\mathrm{LC}}=1$ must not be imported into that model.
+
+| Symbol | Meaning |
+|:--|:--|
+| $q$ | Hilbert-space dimension of one site; $q=2$ for a qubit |
+| $L$ | Number of sites in a finite chain |
+| $A,\bar A$ | A region and its complement |
+| $\ell$ | Number of sites in an interval $A$ |
+| $D_A=q^{|A|}$ | Hilbert-space dimension of a region |
+| $\ket\psi,\rho$ | State vector and density matrix |
+| $\rho_A$ | Reduced density matrix, $\operatorname{Tr}_{\bar A}\rho$ |
+| $S_A$ or $S_1(A)$ | von Neumann entropy of $\rho_A$ |
+| $S_n(A)$ | Rényi entropy, $\ln\operatorname{Tr}\rho_A^n/(1-n)$ |
+| $P_A$ | Purity $\operatorname{Tr}\rho_A^2$ |
+| $I(A:B)$ | von Neumann mutual information |
+| $s_{\mathrm{eq}}$ | Equilibrium entropy per site; $\ln q$ without symmetry constraints |
+| $p$ | Probability of measuring a given site after a layer |
+| $\mathbf m$ | Complete retained measurement record |
+| $K_{\mathbf m}$ | Unnormalized trajectory Kraus operator |
+| $P_{\mathbf m}$ | Born probability of that record |
+| $\mathcal E(v)$ | Membrane line tension in entropy-density units |
+| $v_E$ | Entanglement velocity for the entropy under discussion |
+| $v_B$ | Butterfly velocity of the information front |
+| $v_{\mathrm{LC}}$ | Strict light-cone speed of a brickwork circuit |
+| $D_{\mathrm{f}}$ | Front diffusion coefficient, distinct from charge diffusion |
+| $\chi$ | MPS bond dimension, or a separately defined order diagnostic |
+| $F$ | Swap operator when acting on two copies; Floquet unitary in its own section |
+| $N$ | Replica count in replica arguments; the meaning is fixed locally |
+
+Ordinary $\operatorname{Tr}$ and the macro $\tr$ mean the **unnormalized** matrix trace. The operator-spreading chapter separately defines $\operatorname{tr}_{\infty}(O)=q^{-L}\operatorname{Tr}O$. We never infer normalization from whether the symbol is written in uppercase or lowercase.
+
+The usual Heisenberg convention is $O_H(t)=U^\dagger(t)OU(t)$. For following encoded information, the operator chapter explicitly uses $O(t)=U(t)OU^\dagger(t)$ instead. Independent Haar gates give the same statistical spreading laws in either convention, but time-ordered expressions in a fixed circuit must respect the chosen order.
+
+## Averages that must not be interchanged
+
+An overbar denotes a specified circuit-ensemble average. A trajectory average includes a Born-weighted sum over outcomes; random measurement locations supply another average. An experimental average over repeated preparations estimates these expectations only when the preparation and sampling protocols match them.
+
+For a positive random purity $P$,
+
+$$
+S_2^{\mathrm{ann}}=-\ln\overline P,
+\qquad \overline{S_2}=-\overline{\ln P}.
+$$
+
+The first is called **annealed** and the logarithmic free-energy average is called **quenched**. They obey $S_2^{\mathrm{ann}}\leq\overline{S_2}$. “Typical” often concerns probability concentration of a realization-dependent quantity; it is not automatically a synonym for either average.
+
+## Glossary
+
+**Area law / volume law.** Scaling of a region's entropy with its boundary size or volume as the region and system grow. In one dimension a connected interval has a fixed number of endpoints, so an area law means bounded entropy, while a volume law has a nonzero entropy density.
+
+**Haar measure.** The normalized probability measure on a compact unitary group invariant under left and right multiplication by fixed group elements. It specifies a distribution of gates, not just a typical-looking numerical matrix.
+
+**Unitary design.** An ensemble reproducing specified Haar moments up to an integer order. Reproducing a few moments does not make every observable or higher-order fluctuation identical to Haar behavior.
+
+**Replica / pairing / domain wall.** Auxiliary copies used to express moments of a quantum state. A pairing matches forward to backward copies. Different local matching patterns are separated by a domain wall in the effective statistical mechanics. These are not literal magnetic domains in the physical chain.
+
+**Membrane.** A coarse-grained surface in spacetime whose optimized entanglement cost describes leading entropy dynamics. Its line tension includes microscopic path entropy; it is not just the length of a drawn curve.
+
+**KPZ / directed polymer.** Kardar–Parisi–Zhang fluctuating growth and the related free-energy statistics of a directed path in a random medium. The familiar $1/3$ and $2/3$ exponents belong to a specific effective dimensionality and geometry.
+
+**OTOC.** An out-of-time-ordered correlator, such as a normalized trace of $O(t)V O(t)V$. A squared commutator built from it detects the growth of operator support. An OTOC is not itself an entanglement entropy or a complete criterion for chaos.
+
+**Floquet circuit.** A fixed finite sequence of gates repeated periodically. The spectrum of that fixed period operator is meaningful; resampling every period defines a different model.
+
+**Dual-unitary circuit.** A circuit whose gate tensor is unitary under both ordinary time evolution and a specified reshuffling of space/time indices. This permits cancellations unavailable in generic circuits.
+
+**Stabilizer / Clifford.** A stabilizer is a Pauli constraint on a state. Clifford unitaries map Pauli strings to Pauli strings, allowing a compact generator description despite potentially large entanglement.
+
+**Gaussian state.** A fermionic state determined by two-point correlations through Wick factorization. Gaussian-preserving dynamics can be simulated by covariance matrices. Generic interactions or non-Gaussian measurements leave this class.
+
+**Trajectory / unraveling.** A conditional state history for a particular measurement scheme and record. Different ways to monitor an environment can produce different trajectory ensembles with the same averaged channel.
+
+**Purification transition.** A transition in the rate at which monitored dynamics removes uncertainty about an initially mixed state, or equivalently loses entanglement with an external purifying reference.
+
+**Code rate / code distance / decoder.** Rate is the density of stored logical information. Distance specifies which error supports can be corrected and must name the error class and geometry. A decoder maps accessible syndrome or measurement data into a recovery or prediction. These are separate properties.
+
+**Postselection.** Keeping only runs with a prescribed outcome or record. Its expected repetition cost depends on that record's probability. Conditional observables and observables of a pooled state usually differ.
+
+**Symmetry-protected topology.** Entanglement and boundary structure robust within a stated symmetry class. Distinct symmetry-protected phases may both obey an area law.
+
+**Charge sharpening.** Reduction of trajectory uncertainty in a conserved total charge by acquiring information from measurements, even though no charge is exchanged with the apparatus.
+
