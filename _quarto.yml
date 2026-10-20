@@ -1,0 +1,95 @@
+project:
+  type: book
+  output-dir: _site
+  resources:
+    - data/*.csv
+    - scripts/*.jl
+    - scripts/*.py
+    - LICENSE
+    - FIGURE_CREDITS.md
+
+book:
+  title: "Random Quantum Circuits"
+  subtitle: "From qubits to dynamical phases: a self-contained course"
+  author:
+    - name: Ze-Yu Xing
+      orcid: 0009-0009-5655-0187
+      affiliations:
+        - Institute of Physics, Chinese Academy of Sciences
+        - University of Chinese Academy of Sciences
+  date: "2026-10-20"
+  date-format: long
+  output-file: random-quantum-circuits
+  site-url: https://xing-phys.github.io/random-quantum-circuits-book/
+  repo-url: https://github.com/xing-phys/random-quantum-circuits-book
+  repo-actions: [edit, issue, source]
+  search: true
+  downloads: [pdf]
+  reader-mode: true
+  sidebar:
+    style: docked
+    collapse-level: 1
+  chapters:
+    - index.qmd
+    - part: "I · Building the language"
+      chapters:
+        - foundations.qmd
+        - circuits.qmd
+        - classical-mappings.qmd
+    - part: "II · Unitary many-body dynamics"
+      chapters:
+        - entanglement.qmd
+        - operator-spreading.qmd
+        - structured-unitary.qmd
+    - part: "III · Dynamics under observation"
+      chapters:
+        - monitored.qmd
+        - structured-monitored.qmd
+    - part: "IV · From theory to practice"
+      chapters:
+        - laboratories.qmd
+        - experiments.qmd
+        - outlook.qmd
+    - references.qmd
+  appendices:
+    - notation.qmd
+    - coverage.qmd
+  page-footer:
+    left: "An independent learning companion to Fisher, Khemani, Nahum & Vijay (2023)."
+    right: "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) · [Source](https://github.com/xing-phys/random-quantum-circuits-book)"
+
+bibliography: assets/bibliography.bib
+csl: assets/american-physics-society.csl
+link-citations: true
+lang: en
+
+format:
+  html:
+    theme:
+      light: [cosmo, assets/theme-light.scss]
+      dark: [darkly, assets/theme-dark.scss]
+    css: assets/styles.css
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    fig-responsive: true
+    include-in-header: assets/mathjax-config.html
+    code-copy: true
+    code-overflow: wrap
+  pdf:
+    documentclass: scrreprt
+    pdf-engine: xelatex
+    papersize: a4
+    geometry: [margin=25mm]
+    fontsize: 11pt
+    colorlinks: true
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    include-in-header: assets/macros.sty
+    keep-tex: false
+    fig-pos: H
+
+execute:
+  enabled: false
+

@@ -1,0 +1,15 @@
+name: Validate changes
+on: pull_request
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: '1.10.18'
+          tinytex: true
+      - run: quarto render
+      - run: python3 scripts/check_book.py

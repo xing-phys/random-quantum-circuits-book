@@ -1,0 +1,14 @@
+/.quarto/
+/_site/
+/_freeze/
+/tmp/
+/.venv/
+__pycache__/
+*.quarto_ipynb
+*.log
+*.aux
+*.toc
+*.out
+*.synctex.gz
+.DS_Store
+
